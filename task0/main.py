@@ -1,9 +1,13 @@
 
 """ Import packages """
-from sklearn.metrics import mean_squared_error
-import pandas as pd
 import numpy as np
 
 """ Data import """
-train = pd.read_csv("data/train.csv")
-test = pd.read_csv("data/test.csv")
+train = np.genfromtxt("data/train.csv", delimiter=',', skip_header=True)
+test = np.genfromtxt("data/test.csv", delimiter=',', skip_header=True)
+y_pred = np.mean(test[:, 1:], axis=1)
+
+result = np.column_stack((test[:, 0], y_pred))
+np.savetxt("result.csv", result, delimiter=",", fmt="%i, %1.4f", header="Id, y")
+
+
