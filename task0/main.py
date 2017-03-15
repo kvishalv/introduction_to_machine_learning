@@ -9,7 +9,7 @@ def main():
     y_pred = np.mean(test[:, 1:], axis=1)
 
     result_test = np.column_stack((test[:, 0], y_pred))
-    np.savetxt("test_result.csv", result_test, delimiter=",", fmt="%i, %1.4f", header="Id, y")
+    np.savetxt("test_result.csv", result_test, delimiter=",", fmt="%i,%1.4f", header="Id,y", comments="")
 
 #   y = np.mean(train[:, 2:], axis=1)
 #   result_train = np.column_stack((train[:, 0], y))
