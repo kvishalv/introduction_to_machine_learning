@@ -1,0 +1,1 @@
+To obtain y, we computed the row-wise mean of the columns x1, ..., x10 of each entry in the test data set and returned the resulting y corresponding to the ID.
