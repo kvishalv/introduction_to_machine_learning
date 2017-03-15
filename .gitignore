@@ -3,3 +3,4 @@
 .ipynb_checkpoints/
 test_result.csv
 train_result.csv
+*.swp
