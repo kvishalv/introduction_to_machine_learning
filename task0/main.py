@@ -2,18 +2,55 @@
 
 import numpy as np
 
+
 def main():
     """ Data import """
-    train = np.genfromtxt("data/train.csv", delimiter=',', skip_header=True)
-    test = np.genfromtxt("data/test.csv", delimiter=',', skip_header=True)
-    y_pred = np.mean(test[:, 1:], axis=1)
+    train_set = get_train()
+    model = train(train_set)
 
-    result_test = np.column_stack((test[:, 0], y_pred))
-    np.savetxt("test_result.csv", result_test, delimiter=",", fmt="%i,%.20f", header="Id,y", comments="")
+    validation_set = get_validation()
+    score = validate(model, validation_set)
 
-#   y = np.mean(train[:, 2:], axis=1)
-#   result_train = np.column_stack((train[:, 0], y))
-#   np.savetxt("train_result.csv", result_train, delimiter=",", fmt="%i, %1.1f", header="Id, y")
+    test_set = get_test()
+    prediction = evaluate(model, test_set)
+
+    write_result(train_set, prediction)
+
+
+def csv_to_np(filename):
+    return np.genfromtxt(filename, delimiter=',', skip_header=True)
+
+
+def get_train():
+    #FIXME
+    return csv_to_np("data/test.csv")
+
+
+def get_validation():
+    return csv_to_np("data/test.csv")
+
+
+def get_test():
+    return csv_to_np("data/test.csv")
+
+
+def train(train_set):
+    return np.mean(train_set[:, 1:], axis=1)
+
+
+def validate(prediction, validation_set):
+    pass
+
+
+def evaluate(model, test_set):
+    #FIXME
+    return model
+
+
+def write_result(test_set, prediction):
+    result_test = np.column_stack((test_set[:, 0], prediction))
+    np.savetxt("test_result.csv", result_test, delimiter=",", fmt="%i,%1.20f", header="Id,y", comments="")
+
 
 if __name__ == '__main__':
     main()
