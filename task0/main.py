@@ -12,7 +12,7 @@ def main():
     score = validate(model, validation_set)
 
     test_set = get_test()
-    prediction = evaluate(model, test_set)
+    prediction = predict(model, test_set)
 
     write_result(train_set, prediction)
 
@@ -27,7 +27,7 @@ def get_train():
 
 
 def get_validation():
-    return csv_to_np("data/test.csv")
+    pass
 
 
 def get_test():
@@ -35,16 +35,15 @@ def get_test():
 
 
 def train(train_set):
-    return np.mean(train_set[:, 1:], axis=1)
+    return lambda v: np.mean(v)
 
 
 def validate(prediction, validation_set):
     pass
 
 
-def evaluate(model, test_set):
-    #FIXME
-    return model
+def predict(model, test_set):
+    return np.apply_along_axis(model, 1, test_set[:, 1:])
 
 
 def write_result(test_set, prediction):
