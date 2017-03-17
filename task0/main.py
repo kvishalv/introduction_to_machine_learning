@@ -42,7 +42,7 @@ def get_test_data(filename):
 
 
 def train(features, output):
-    return np.mean
+    return mymean
 
 
 def mymean(v):
