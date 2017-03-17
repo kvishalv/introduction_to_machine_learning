@@ -4,7 +4,6 @@ import numpy as np
 
 
 def main():
-    """ Data import """
     col_id, features, y = get_train_data('data/train.csv')
     model = train(features, y)
 
