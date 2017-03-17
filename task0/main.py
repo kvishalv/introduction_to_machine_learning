@@ -6,6 +6,8 @@ import numpy as np
 def main():
     col_id, features, y = get_train_data('data/train.csv')
     model = train(features, y)
+    print(calc_error(predict(model, features), y))
+
 
     col_id, features = get_test_data('data/test.csv')
     predictions = predict(model, features)
@@ -45,6 +47,11 @@ def train(features, output):
 
 def predict(model, test_set):
     return np.apply_along_axis(model, 1, test_set)
+
+
+def calc_error(predictions, true_values):
+    errors = true_values - predictions
+    return (np.sum(errors ** 2) / errors.size) ** 0.5
 
 
 def write_result(col_id, predictions):
