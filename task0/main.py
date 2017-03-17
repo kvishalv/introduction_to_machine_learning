@@ -46,9 +46,13 @@ def predict(model, test_set):
     return np.apply_along_axis(model, 1, test_set[:, 1:])
 
 
-def write_result(test_set, prediction):
-    result_test = np.column_stack((test_set[:, 0], prediction))
-    np.savetxt("test_result.csv", result_test, delimiter=",", fmt="%i,%1.20f", header="Id,y", comments="")
+def write_result(col_id, predictions):
+    result_test = np.column_stack((col_id[:, 0], predictions))
+    np.savetxt(
+        "test_result.csv", result_test,
+        header="Id,y", comments="",
+        delimiter=",", fmt="%i,%1.20f"
+    )
 
 
 if __name__ == '__main__':
