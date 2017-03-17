@@ -5,13 +5,6 @@ import abc
 import numpy as np
 
 
-def write_result(filename, result):
-    np.savetxt(
-        filename, result,
-        header="Id,y", comments="",
-        delimiter=",", fmt="%i,%r"
-    )
-
 class CSVDataSet(object):
 
     def __init__(self, ids, features, outputs):
@@ -62,20 +55,15 @@ class AbstractLearner(object):
     _model = NotImplemented
 
     def __init__(self):
-        self._train_id = None
-        self._train_features = None
-        self._train_y = None
+        self._train_set = None
+        self._test_set = None
 
-        self._test_id = None
-        self._test_features = None
-        self._test_y = None
-
-    def learn_from(self, filename):
-        self._get_train_data(filename)
+    def learn_from(self, train_set):
+        self._train_set = train_set
         self._train()
 
-    def predict_from(self, filename):
-        self._get_test_data(filename)
+    def predict_from(self, test_set):
+        self._test_set = test_set
         return self._predict()
 
     @staticmethod
@@ -83,37 +71,16 @@ class AbstractLearner(object):
         errors = true_values - predictions
         return (np.sum(errors ** 2) / errors.size) ** 0.5
 
-    def _get_train_data(self, filename):
-        data = self._csv_to_array(filename)
-        self._train_id = data[:, 0].astype('int')
-        self._train_y = data[:, 1]
-        self._train_features = data[:, 2:]
-
-    def _get_test_data(self, filename):
-        data = self._csv_to_array(filename)
-        self._test_id = data[:, 0].astype('int')
-        self._test_features = data[:, 1:]
-
-    @staticmethod
-    def _csv_to_array(filename, dtype=np.longdouble):
-        """
-        Returns contents of `filename` CSV file as a numpy array.
-
-        dtype: NumPy type
-
-        Note: Assumes and ignores exactly one header line.
-        """
-        return np.genfromtxt(
-            filename, delimiter=',', dtype=dtype, skip_header=True
-        )
-
     @abc.abstractmethod
     def _train(self):
         raise NotImplementedError
 
     def _predict(self):
-        self._test_y = np.apply_along_axis(self._model, 1, self._test_features)
-        return np.column_stack((self._test_id, self._test_y))
+        self._test_set.outputs = np.apply_along_axis(
+            self._model, 1, self._test_set.features
+        )
+        return self._test_set
+
 
 class MeanLearner(AbstractLearner):
 
@@ -133,11 +100,13 @@ class AdvMeanLearner(AbstractLearner):
 
 
 def main():
-    learner = MeanLearner()
+    train_set = CSVDataSet.from_train_data('data/train.csv')
+    test_set = CSVDataSet.from_test_data('data/test.csv')
 
-    learner.learn_from('data/train.csv')
-    result = learner.predict_from('data/test.csv')
-    write_result('test_result.csv', result)
+    learner = MeanLearner()
+    learner.learn_from(train_set)
+    out_set = learner.predict_from(test_set)
+    out_set.write_labelled_output('test_result.csv')
 
     #print(calc_error(predict(model, features), y))
 
