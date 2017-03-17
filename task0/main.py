@@ -112,15 +112,17 @@ class AutoLeastSquaresLearner(AbstractLearner):
 
 
 def main():
-    train_set = CSVDataSet.from_train_data('data/train.csv', dtype=np.double)
-    test_set = CSVDataSet.from_test_data('data/test.csv', dtype=np.double)
-
+    # learner = MeanLearner()
+    # learner = AdvMeanLearner()
     learner = AutoLeastSquaresLearner()
+
+    train_set = CSVDataSet.from_train_data('data/train.csv', dtype=np.double)
     learner.learn_from(train_set)
+    print(learner.train_error)
+
+    test_set = CSVDataSet.from_test_data('data/test.csv', dtype=np.double)
     out_set = learner.predict_from(test_set)
     out_set.write_labelled_output('test_result.csv')
-
-    #print(calc_error(predict(model, features), y))
 
 
 if __name__ == '__main__':
