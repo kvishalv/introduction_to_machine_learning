@@ -31,7 +31,7 @@ def get_test():
 
 
 def train(train_set):
-    return lambda v: np.mean(v)
+    return np.mean
 
 
 
