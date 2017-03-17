@@ -64,7 +64,8 @@ class AbstractLearner(object):
 
     def predict_from(self, test_set):
         self._test_set = test_set
-        return self._predict()
+        self._test_set.outputs = self._predict(self._test_set.features)
+        return self._test_set
 
     @staticmethod
     def rms_error(predictions, true_values):
@@ -75,11 +76,8 @@ class AbstractLearner(object):
     def _train(self):
         raise NotImplementedError
 
-    def _predict(self):
-        self._test_set.outputs = np.apply_along_axis(
-            self._model, 1, self._test_set.features
-        )
-        return self._test_set
+    def _predict(self, features):
+        return np.apply_along_axis(self._model, 1, features)
 
 
 class MeanLearner(AbstractLearner):
