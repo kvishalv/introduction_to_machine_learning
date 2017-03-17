@@ -52,7 +52,7 @@ def write_result(col_id, predictions):
     np.savetxt(
         "test_result.csv", result_test,
         header="Id,y", comments="",
-        delimiter=",", fmt="%i,%1.20f"
+        delimiter=",", fmt="%i,%r"
     )
 
 
