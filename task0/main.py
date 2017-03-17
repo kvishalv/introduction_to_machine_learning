@@ -45,6 +45,11 @@ def train(features, output):
     return np.mean
 
 
+def mymean(v):
+    v.sort()
+    return np.mean(v)
+
+
 def predict(model, test_set):
     return np.apply_along_axis(model, 1, test_set)
 
