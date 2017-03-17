@@ -5,43 +5,49 @@ import numpy as np
 
 def main():
     """ Data import """
-    train_set = get_train_data('data/train.csv')
-    model = train(train_set)
+    col_id, features, y = get_train_data('data/train.csv')
+    model = train(features, y)
+
+    col_id, features = get_test_data('data/test.csv')
+    predictions = predict(model, features)
+
+    write_result(col_id, predictions)
 
 
+def csv_to_array(filename):
+    """
+    Returns contents of `filename` CSV file as a numpy array.
 
-    test_set = get_test()
-    prediction = predict(model, test_set)
-
-    write_result(train_set, prediction)
-
-
-def csv_to_np(filename):
+    Assumes and ignores exactly one header line
+    """
     return np.genfromtxt(filename, delimiter=',', skip_header=True)
 
 
 def get_train_data(filename):
-    return csv_to_np(filename)
+    data = csv_to_array(filename)
+    col_id = data[:, 0].astype('int')
+    y = data[:, 1]
+    features = data[:, 2:]
+    return col_id, features, y
 
 
+def get_test_data(filename):
+    data = csv_to_array(filename)
+    col_id = data[:, 0].astype('int')
+    features = data[:, 1:]
+    return col_id, features
 
 
-def get_test():
-    return csv_to_np("data/test.csv")
-
-
-def train(train_set):
+def train(features, output):
     return np.mean
 
 
-
-
 def predict(model, test_set):
-    return np.apply_along_axis(model, 1, test_set[:, 1:])
+    return np.apply_along_axis(model, 1, test_set)
 
 
 def write_result(col_id, predictions):
-    result_test = np.column_stack((col_id[:, 0], predictions))
+    result_test = np.column_stack((col_id, predictions))
     np.savetxt(
         "test_result.csv", result_test,
         header="Id,y", comments="",
