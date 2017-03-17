@@ -99,11 +99,20 @@ class AdvMeanLearner(AbstractLearner):
         return np.mean(v)
 
 
+class AutoLeastSquaresLearner(AbstractLearner):
+
+    def _train(self):
+        A = self._train_set.features
+        b = self._train_set.outputs
+        x, _residuals, _rank, _s = np.linalg.lstsq(A, b)
+        self._model = lambda v: v.dot(x)
+
+
 def main():
     train_set = CSVDataSet.from_train_data('data/train.csv', dtype=np.double)
     test_set = CSVDataSet.from_test_data('data/test.csv', dtype=np.double)
 
-    learner = MeanLearner()
+    learner = AutoLeastSquaresLearner()
     learner.learn_from(train_set)
     out_set = learner.predict_from(test_set)
     out_set.write_labelled_output('test_result.csv')
