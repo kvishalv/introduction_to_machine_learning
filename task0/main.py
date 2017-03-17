@@ -8,8 +8,7 @@ def main():
     train_set = get_train()
     model = train(train_set)
 
-    validation_set = get_validation()
-    score = validate(model, validation_set)
+
 
     test_set = get_test()
     prediction = predict(model, test_set)
@@ -26,8 +25,6 @@ def get_train():
     return csv_to_np("data/test.csv")
 
 
-def get_validation():
-    pass
 
 
 def get_test():
@@ -38,8 +35,6 @@ def train(train_set):
     return lambda v: np.mean(v)
 
 
-def validate(prediction, validation_set):
-    pass
 
 
 def predict(model, test_set):
