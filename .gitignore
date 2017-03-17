@@ -4,3 +4,4 @@
 test_result.csv
 train_result.csv
 *.swp
+__pycache__
