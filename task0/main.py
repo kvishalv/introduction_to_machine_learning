@@ -19,7 +19,9 @@ def csv_to_array(filename):
 
     Assumes and ignores exactly one header line
     """
-    return np.genfromtxt(filename, delimiter=',', skip_header=True)
+    return np.genfromtxt(
+        filename, delimiter=',', dtype=np.longdouble, skip_header=True
+    )
 
 
 def get_train_data(filename):
