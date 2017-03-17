@@ -94,7 +94,7 @@ class MeanLearner(AbstractLearner):
 class AdvMeanLearner(AbstractLearner):
 
     def _train(self):
-        self._model = _mymean
+        self._model = self._mymean
 
     @staticmethod
     def _mymean(v):
