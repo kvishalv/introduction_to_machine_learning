@@ -67,6 +67,11 @@ class AbstractLearner(object):
         self._test_set.outputs = self._predict(self._test_set.features)
         return self._test_set
 
+    @property
+    def train_error(self):
+        predictions = self._predict(self._train_set.features)
+        return self.rms_error(predictions, self._train_set.outputs)
+
     @staticmethod
     def rms_error(predictions, true_values):
         mse = ((true_values - predictions) ** 2).mean()
