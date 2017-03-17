@@ -68,8 +68,8 @@ class AbstractLearner(object):
 
     @staticmethod
     def rms_error(predictions, true_values):
-        errors = true_values - predictions
-        return (np.sum(errors ** 2) / errors.size) ** 0.5
+        mse = ((true_values - predictions) ** 2).mean()
+        return mse ** 0.5
 
     @abc.abstractmethod
     def _train(self):
