@@ -5,7 +5,7 @@ import numpy as np
 
 def main():
     """ Data import """
-    train_set = get_train()
+    train_set = get_train_data('data/train.csv')
     model = train(train_set)
 
 
@@ -20,9 +20,8 @@ def csv_to_np(filename):
     return np.genfromtxt(filename, delimiter=',', skip_header=True)
 
 
-def get_train():
-    #FIXME
-    return csv_to_np("data/test.csv")
+def get_train_data(filename):
+    return csv_to_np(filename)
 
 
 
