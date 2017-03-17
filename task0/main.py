@@ -13,22 +13,22 @@ class CSVDataSet(object):
         self.outputs = outputs
 
     @classmethod
-    def from_train_data(cls, filename):
-        data = cls._csv_to_array(filename)
+    def from_train_data(cls, filename, dtype=np.longdouble):
+        data = cls._csv_to_array(filename, dtype)
         train_id = data[:, 0].astype('int')
         train_y = data[:, 1]
         train_features = data[:, 2:]
         return cls(train_id, train_features, train_y)
 
     @classmethod
-    def from_test_data(cls, filename):
-        data = cls._csv_to_array(filename)
+    def from_test_data(cls, filename, dtype=np.longdouble):
+        data = cls._csv_to_array(filename, dtype)
         test_id = data[:, 0].astype('int')
         test_features = data[:, 1:]
         return cls(test_id, test_features, None)
 
     @staticmethod
-    def _csv_to_array(filename, dtype=np.longdouble):
+    def _csv_to_array(filename, dtype):
         """
         Returns contents of `filename` CSV file as a numpy array.
 
@@ -100,8 +100,8 @@ class AdvMeanLearner(AbstractLearner):
 
 
 def main():
-    train_set = CSVDataSet.from_train_data('data/train.csv')
-    test_set = CSVDataSet.from_test_data('data/test.csv')
+    train_set = CSVDataSet.from_train_data('data/train.csv', dtype=np.double)
+    test_set = CSVDataSet.from_test_data('data/test.csv', dtype=np.double)
 
     learner = MeanLearner()
     learner.learn_from(train_set)
