@@ -1,5 +1,7 @@
 import numpy as np
-from modules.AbstractLearner import *
+
+from modules.AbstractLearner import AbstractLearner
+
 
 class MeanLearner(AbstractLearner):
 
@@ -7,8 +9,8 @@ class MeanLearner(AbstractLearner):
         self._model = np.mean
 
 
-""" Sorts the training data, then takes the mean """
 class AdvMeanLearner(AbstractLearner):
+    """ Sorts the training data, then takes the mean """
 
     def _train(self):
         self._model = self._mymean

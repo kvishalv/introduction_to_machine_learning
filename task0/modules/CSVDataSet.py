@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class CSVDataSet(object):
 
     def __init__(self, ids, features, outputs):
