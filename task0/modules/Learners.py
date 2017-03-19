@@ -1,0 +1,49 @@
+import numpy as np
+from modules.AbstractLearner import *
+
+class MeanLearner(AbstractLearner):
+
+    def _train(self):
+        self._model = np.mean
+
+
+""" Sorts the training data, then takes the mean """
+class AdvMeanLearner(AbstractLearner):
+
+    def _train(self):
+        self._model = self._mymean
+
+    @staticmethod
+    def _mymean(v):
+        v.sort()
+        return np.mean(v)
+
+
+class LeastSquaresLearner(AbstractLearner):
+
+    def _train(self):
+        a = self._train_set.features
+        b = self._train_set.outputs
+        x, _residuals, _rank, _s = np.linalg.lstsq(a, b)
+        self._model = lambda v: v.dot(x)
+
+
+class MoorePenroseLearner(AbstractLearner):
+
+    def _train(self):
+        a  = self._train_set.features
+        b  = self._train_set.outputs
+        at = np.linalg.pinv(a)
+        x  = at.dot(b)
+        self._model = lambda v: v.dot(x)
+
+
+class QRFactorizationLearner(AbstractLearner):
+
+    def _train(self):
+        a    = self._train_set.features
+        b    = self._train_set.outputs
+        q, r = np.linalg.qr(a)
+        qt   = np.linalg.pinv(q)
+        x    = np.linalg.solve(r, qt.dot(b))
+        self._model = lambda v: v.dot(x)
