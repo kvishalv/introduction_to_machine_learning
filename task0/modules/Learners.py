@@ -46,6 +46,8 @@ class QRFactorizationLearner(AbstractLearner):
         a    = self._train_set.features
         b    = self._train_set.outputs
         q, r = np.linalg.qr(a)
-        qt   = q.transpose()
-        x    = np.linalg.solve(r, qt.dot(b))
+        # QRx = b; where Q is orthogonal and R is upper triangular
+        # Rx = Q^T b = (b^T Q)^T = b_proj
+        b_proj = b.transpose().dot(q).transpose()
+        x    = np.linalg.solve(r, b_proj)
         self._model = lambda v: v.dot(x)
