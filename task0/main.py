@@ -11,7 +11,7 @@ To do:
     validation framework
 """
 
-DEBUG = False
+OUTPUT = True
 learner = QRFactorizationLearner()
 
 
@@ -24,7 +24,7 @@ def main():
     print("Training error for", learner.__class__.__name__, "is:", learner.train_error)
 
     """ Get the test data, process & write the output """
-    if not DEBUG:
+    if OUTPUT:
         test_set = CSVDataSet.from_test_data('data/test.csv', dtype=np.double)
         out_set = learner.predict_from(test_set)
         out_set.write_labelled_output('test_result.csv')
