@@ -46,6 +46,6 @@ class QRFactorizationLearner(AbstractLearner):
         a    = self._train_set.features
         b    = self._train_set.outputs
         q, r = np.linalg.qr(a)
-        qt   = np.linalg.pinv(q)
+        qt   = q.transpose()
         x    = np.linalg.solve(r, qt.dot(b))
         self._model = lambda v: v.dot(x)
