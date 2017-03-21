@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import linalg as splin
 
 from modules.AbstractLearner import AbstractLearner
 
@@ -49,5 +50,5 @@ class QRFactorizationLearner(AbstractLearner):
         # QRx = b; where Q is orthogonal and R is upper triangular
         # Rx = Q^T b = (b^T Q)^T = b_proj
         b_proj = b.transpose().dot(q).transpose()
-        x    = np.linalg.solve(r, b_proj)
+        x    = splin.solve_triangular(r, b_proj, overwrite_b=True)
         self._model = lambda v: v.dot(x)
