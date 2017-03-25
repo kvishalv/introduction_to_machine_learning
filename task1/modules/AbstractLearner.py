@@ -26,6 +26,11 @@ class _AbstractLearner(object):
         self._test_set.outputs = self._predict(self._test_set.features)
         return self._test_set
 
+    # Calls self._predict
+    def validate_against(self, validation_set):
+        predictions = self._predict(validation_set.features)
+        return self.rms_error(predictions, validation_set.outputs)
+
     @property
     # Calls self._predict
     def train_error(self):
