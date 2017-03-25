@@ -12,7 +12,7 @@ To do:
 """
 
 OUTPUT = True
-learner = QRFactorizationLearner()
+learner = PolyRidgeRegressionLearner()
 
 
 def main():
