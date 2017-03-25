@@ -1,10 +1,14 @@
 import numpy as np
 from scipy import linalg as splin
-from sklearn import linear_model
+from sklearn import (
+    linear_model,
+    preprocessing
+)
 
 from modules.AbstractLearner import (
     NumPyLearner,
-    SciKitLearner
+    SciKitLearner,
+    TransformingSciKitLearner
 )
 
 
@@ -52,4 +56,20 @@ class RidgeRegressionLearner(SciKitLearner):
             random_state=42
         )
         clf.fit(x, y)
+        self._model = clf.predict
+
+
+class PolyRidgeRegressionLearner(TransformingSciKitLearner):
+
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        self._transform = preprocessing.PolynomialFeatures(2)
+
+        clf = linear_model.Ridge(
+            alpha=1.0,
+            fit_intercept=True,
+        )
+        clf.fit(self._transform.fit_transform(x), y)
         self._model = clf.predict
