@@ -45,7 +45,7 @@ class _AbstractLearner(object):
         raise NotImplementedError
 
 
-class AbstractLearner(_AbstractLearner):
+class NumPyLearner(_AbstractLearner):
 
     def _predict(self, features):
         return np.apply_along_axis(self._model, 1, features)

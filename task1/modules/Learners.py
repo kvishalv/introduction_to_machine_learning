@@ -1,10 +1,10 @@
 import numpy as np
 from scipy import linalg as splin
 
-from modules.AbstractLearner import AbstractLearner
+from modules.AbstractLearner import NumPyLearner
 
 
-class LeastSquaresLearner(AbstractLearner):
+class LeastSquaresLearner(NumPyLearner):
 
     def _train(self):
         a = self._train_set.features
@@ -13,7 +13,7 @@ class LeastSquaresLearner(AbstractLearner):
         self._model = lambda v: v.dot(x)
 
 
-class MoorePenroseLearner(AbstractLearner):
+class MoorePenroseLearner(NumPyLearner):
 
     def _train(self):
         a  = self._train_set.features
@@ -23,7 +23,7 @@ class MoorePenroseLearner(AbstractLearner):
         self._model = lambda v: v.dot(x)
 
 
-class QRFactorizationLearner(AbstractLearner):
+class QRFactorizationLearner(NumPyLearner):
 
     def _train(self):
         a    = self._train_set.features
