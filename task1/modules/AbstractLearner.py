@@ -3,7 +3,7 @@ import abc
 import numpy as np
 
 
-class AbstractLearner(object):
+class _AbstractLearner(object):
 
     __metaclass__ = abc.ABCMeta
 
@@ -39,6 +39,13 @@ class AbstractLearner(object):
     @abc.abstractmethod
     def _train(self):
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def _predict(self, features):
+        raise NotImplementedError
+
+
+class AbstractLearner(_AbstractLearner):
 
     def _predict(self, features):
         return np.apply_along_axis(self._model, 1, features)
