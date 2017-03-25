@@ -73,3 +73,24 @@ class PolyRidgeRegressionLearner(TransformingSciKitLearner):
         )
         clf.fit(self._transform.fit_transform(x), y)
         self._model = clf.predict
+
+
+class PolyTheilSenRegressionLearner(TransformingSciKitLearner):
+
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        self._transform = preprocessing.PolynomialFeatures(
+            2,
+            interaction_only=False,
+        )
+
+        clf = linear_model.TheilSenRegressor(
+            fit_intercept=True,
+            verbose=True,
+            n_jobs=4,
+            max_subpopulation=10000
+        )
+        clf.fit(self._transform.fit_transform(x), y)
+        self._model = clf.predict

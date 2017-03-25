@@ -12,7 +12,7 @@ To do:
 """
 
 OUTPUT = True
-learner = PolyRidgeRegressionLearner()
+learner = PolyTheilSenRegressionLearner()
 
 
 def main():
