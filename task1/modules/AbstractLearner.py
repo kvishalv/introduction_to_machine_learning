@@ -68,5 +68,5 @@ class TransformingSciKitLearner(SciKitLearner):
 
     def _predict(self, features):
         return super()._predict(
-            self._transform.fit_transform(features)
+            self._transform.transform(features)
         )
