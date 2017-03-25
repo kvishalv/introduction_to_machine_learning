@@ -1,6 +1,7 @@
 import abc
 
 import numpy as np
+from sklearn import metrics
 
 
 class _AbstractLearner(object):
@@ -33,8 +34,7 @@ class _AbstractLearner(object):
 
     @staticmethod
     def rms_error(predictions, true_values):
-        mse = ((true_values - predictions) ** 2).mean()
-        return mse ** 0.5
+        return metrics.mean_squared_error(predictions, true_values) ** 0.5
 
     @abc.abstractmethod
     def _train(self):
