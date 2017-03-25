@@ -1,16 +1,11 @@
 import numpy as np
 from scipy import linalg as splin
+from sklearn import linear_model
 
-from modules.AbstractLearner import NumPyLearner
-
-
-class LeastSquaresLearner(NumPyLearner):
-
-    def _train(self):
-        a = self._train_set.features
-        b = self._train_set.outputs
-        x, _residuals, _rank, _s = np.linalg.lstsq(a, b)
-        self._model = lambda v: v.dot(x)
+from modules.AbstractLearner import (
+    NumPyLearner,
+    SciKitLearner
+)
 
 
 class MoorePenroseLearner(NumPyLearner):
@@ -34,3 +29,13 @@ class QRFactorizationLearner(NumPyLearner):
         b_proj = b.transpose().dot(q).transpose()
         x    = splin.solve_triangular(r, b_proj, overwrite_b=True)
         self._model = lambda v: v.dot(x)
+
+
+class LinearRegressionLearner(SciKitLearner):
+
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+        clf = linear_model.LinearRegression(fit_intercept=True)
+        clf.fit(x, y)
+        self._model = clf.predict
