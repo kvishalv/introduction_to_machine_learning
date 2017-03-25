@@ -18,10 +18,15 @@ learner = PolyTheilSenRegressionLearner()
 def main():
     """ Get the training data """
     train_set = CSVDataSet.from_train_data('data/train.csv', dtype=np.double)
+    train_set, validation_set = train_set.split()
 
     """ Train """
     learner.learn_from(train_set)
     print("Training error for", learner.__class__.__name__, "is:", learner.train_error)
+
+    """ Validate """
+    verror = learner.validate_against(validation_set)
+    print("Validation error for", learner.__class__.__name__, "is:", verror)
 
     """ Get the test data, process & write the output """
     if OUTPUT:
