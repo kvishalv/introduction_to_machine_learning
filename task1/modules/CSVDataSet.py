@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn import cross_validation
 
 
 class CSVDataSet(object):
@@ -42,3 +43,22 @@ class CSVDataSet(object):
             header="Id,y", comments="",
             delimiter=",", fmt="%i,%r"
         )
+
+    def split(self, train_size=0.90):
+        if self.outputs is None:
+            x1, x2, id1, id2 = cross_validation.train_test_split(
+                self.features,
+                self.ids,
+                train_size=train_size,
+                random_state=42
+            )
+            y1 = y2 = None
+        else:
+            id1, id2, x1, x2, y1, y2 = cross_validation.train_test_split(
+                self.ids,
+                self.features,
+                self.outputs,
+                train_size=train_size,
+                random_state=42
+            )
+        return CSVDataSet(id1, x1, y1), CSVDataSet(id2, x2, y2)
