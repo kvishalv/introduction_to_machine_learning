@@ -1,8 +1,10 @@
 import numpy as np
 from scipy import linalg as splin
 from sklearn import (
+    feature_selection,
     linear_model,
-    preprocessing
+    pipeline,
+    preprocessing,
 )
 
 from modules.AbstractLearner import (
@@ -93,4 +95,25 @@ class PolyTheilSenRegressionLearner(TransformingSciKitLearner):
             max_subpopulation=10000
         )
         clf.fit(self._transform.fit_transform(x), y)
+        self._model = clf.predict
+
+
+class Model0(TransformingSciKitLearner):
+
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        self._transform = pipeline.Pipeline([
+            #('scale', preprocessing.StandardScaler()),
+            ('proliferate', preprocessing.PolynomialFeatures(3)),
+            ('pselect', feature_selection.SelectPercentile(feature_selection.f_regression, percentile=98)),
+            #('kselect', feature_selection.SelectKBest(feature_selection.f_regression, k=750)),
+        ])
+
+        clf = linear_model.Ridge(
+            alpha=800.0,
+            fit_intercept=True,
+        )
+        clf.fit(self._transform.fit_transform(x, y), y)
         self._model = clf.predict

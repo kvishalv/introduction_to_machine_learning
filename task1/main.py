@@ -12,13 +12,13 @@ To do:
 """
 
 OUTPUT = True
-learner = PolyTheilSenRegressionLearner()
+learner = Model0()
 
 
 def main():
     """ Get the training data """
     train_set = CSVDataSet.from_train_data('data/train.csv', dtype=np.double)
-    train_set, validation_set = train_set.split()
+    train_set, validation_set = train_set.split(train_size=0.95)
 
     """ Train """
     learner.learn_from(train_set)
