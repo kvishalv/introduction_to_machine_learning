@@ -13,6 +13,8 @@ from modules.AbstractLearner import (
     TransformingSciKitLearner
 )
 
+import matplotlib.pyplot as plt
+
 
 class MoorePenroseLearner(NumPyLearner):
 
@@ -77,6 +79,25 @@ class PolyRidgeRegressionLearner(TransformingSciKitLearner):
         self._model = clf.predict
 
 
+class LassoRegressionLearner(TransformingSciKitLearner):
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        clf = linear_model.Lasso(1, max_iter=1e8)
+        clf.fit(self._transform.fit_transform(x), y)
+        self._model = clf.predict
+
+class ElasticNetLearner(SciKitLearner):
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        clf = linear_model.ElasticNet(1)
+        clf.fit(x, y)
+        self._model = clf.predict
+
+
 class PolyTheilSenRegressionLearner(TransformingSciKitLearner):
 
     def _train(self):
@@ -111,9 +132,45 @@ class Model0(TransformingSciKitLearner):
             #('kselect', feature_selection.SelectKBest(feature_selection.f_regression, k=750)),
         ])
 
-        clf = linear_model.Ridge(
-            alpha=800.0,
-            fit_intercept=True,
-        )
+        clf = linear_model.Ridge(alpha=800, fit_intercept=True,)
+        clf.fit(self._transform.fit_transform(x, y), y)
+        self._model = clf.predict
+
+    def findOptimalAlpha(self, validation_set):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        transformer = pipeline.Pipeline([
+            ('proliferate', preprocessing.PolynomialFeatures(3)),
+            ('pselect', feature_selection.SelectPercentile(feature_selection.f_regression, percentile=98)),
+        ])
+
+        nrIterations = 10
+        start        = 1
+        increment    = 100
+
+        rms = np.zeros(nrIterations)
+        alp = np.zeros(nrIterations)
+        for i in range(0, nrIterations-1):
+            alp[i] = (i*increment+start)
+            clf = linear_model.Ridge(alpha=alp[i], fit_intercept=True,)
+            clf.fit(transformer.fit_transform(x, y), y)
+            predictions = clf.predict(transformer.transform(validation_set.features))
+            rms[i] = self.rms_error(predictions, validation_set.outputs)
+        plt.plot(alp, rms)
+        plt.title('alpha values vs error')
+        plt.show()
+        print(rms, "\n", alp)
+
+
+class SelectKBestLearner(TransformingSciKitLearner):
+
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        self._transform = feature_selection.SelectKBest(score_func=feature_selection.f_regression, k=10)
+
+        clf = linear_model.Ridge(alpha=1.0, fit_intercept=True,)
         clf.fit(self._transform.fit_transform(x, y), y)
         self._model = clf.predict

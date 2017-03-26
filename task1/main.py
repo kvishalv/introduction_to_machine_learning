@@ -4,25 +4,22 @@ import numpy as np
 
 from modules.CSVDataSet import *
 from modules.Learners import *
+import warnings
 
-
-"""
-To do:
-    validation framework
-"""
-
-OUTPUT = True
+warnings.simplefilter("ignore")
+OUTPUT  = True
 learner = Model0()
 
 
 def main():
     """ Get the training data """
     train_set = CSVDataSet.from_train_data('data/train.csv', dtype=np.double)
-    train_set, validation_set = train_set.split(train_size=0.95)
+    train_set, validation_set = train_set.split(train_size=0.90)
 
     """ Train """
     learner.learn_from(train_set)
     print("Training error for", learner.__class__.__name__, "is:", learner.train_error)
+    learner.findOptimalAlpha(validation_set)
 
     """ Validate """
     verror = learner.validate_against(validation_set)

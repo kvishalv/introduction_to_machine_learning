@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn import cross_validation
+import matplotlib.pyplot as plt
 
 
 class CSVDataSet(object):
@@ -62,3 +63,19 @@ class CSVDataSet(object):
                 random_state=42
             )
         return CSVDataSet(id1, x1, y1), CSVDataSet(id2, x2, y2)
+
+    def printOverview(self):
+
+        np.set_printoptions(threshold=np.nan)
+        print("\n\n------------------------------ overview ------------------------------")
+        print("Means of x values:\n", np.apply_along_axis(np.mean, 0, self.features))
+        print("Std of x values:\n", np.apply_along_axis(np.std, 0, self.features))
+        print("Correlation coefficients of x values:\n", np.corrcoef(self.features,rowvar=0))
+        print("\n")
+        print("Means of y values:", np.mean(self.outputs))
+        print("Std of y values:", np.std(self.outputs))
+        print("----------------------------------------------------------------------\n\n")
+
+        plt.hist(self.outputs, 50)
+        plt.title('y histogram')
+        plt.show()
