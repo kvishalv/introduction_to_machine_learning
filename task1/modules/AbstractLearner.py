@@ -70,13 +70,3 @@ class SciKitLearner(_AbstractLearner):
 
     def _predict(self, features):
         return self._model(self._transform.transform(features))
-
-
-class TransformingSciKitLearner(SciKitLearner):
-
-    _transform = None
-
-    def _predict(self, features):
-        return super()._predict(
-            self._transform.transform(features)
-        )
