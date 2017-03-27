@@ -10,7 +10,6 @@ from sklearn import (
 from modules.AbstractLearner import (
     NumPyLearner,
     SciKitLearner,
-    TransformingSciKitLearner
 )
 
 import matplotlib.pyplot as plt
@@ -63,7 +62,7 @@ class RidgeRegressionLearner(SciKitLearner):
         self._model = clf.predict
 
 
-class PolyRidgeRegressionLearner(TransformingSciKitLearner):
+class PolyRidgeRegressionLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -79,7 +78,7 @@ class PolyRidgeRegressionLearner(TransformingSciKitLearner):
         self._model = clf.predict
 
 
-class LassoRegressionLearner(TransformingSciKitLearner):
+class LassoRegressionLearner(SciKitLearner):
     def _train(self):
         x    = self._train_set.features
         y    = self._train_set.outputs
@@ -98,7 +97,7 @@ class ElasticNetLearner(SciKitLearner):
         self._model = clf.predict
 
 
-class PolyTheilSenRegressionLearner(TransformingSciKitLearner):
+class PolyTheilSenRegressionLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -119,7 +118,7 @@ class PolyTheilSenRegressionLearner(TransformingSciKitLearner):
         self._model = clf.predict
 
 
-class Model0(TransformingSciKitLearner):
+class Model0(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -163,7 +162,7 @@ class Model0(TransformingSciKitLearner):
         print(rms, "\n", alp)
 
 
-class SelectKBestLearner(TransformingSciKitLearner):
+class SelectKBestLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
