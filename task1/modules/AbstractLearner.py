@@ -58,8 +58,18 @@ class NumPyLearner(_AbstractLearner):
 
 class SciKitLearner(_AbstractLearner):
 
+    class IdTransformer(object):
+
+        def __init__(self):
+            return
+
+        def transform(self, features):
+            return features
+
+    _transform = IdTransformer()
+
     def _predict(self, features):
-        return self._model(features)
+        return self._model(self._transform.transform(features))
 
 
 class TransformingSciKitLearner(SciKitLearner):
