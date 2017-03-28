@@ -2,6 +2,7 @@ import numpy as np
 from scipy import linalg as splin
 from sklearn import (
     feature_selection,
+    ensemble,
     linear_model,
     pipeline,
     preprocessing,
@@ -90,6 +91,14 @@ class PolyTheilSenRegressionLearner(SciKitLearner):
         )
         clf.fit(self._transform.fit_transform(x), y)
         self._model = clf.predict
+
+
+def filter_outliers(x, y, **kwargs):
+    xy = np.column_stack((x,y))
+    filter_estimator = ensemble.IsolationForest(random_state=42, **kwargs)
+    filter_estimator.fit(xy)
+    is_inlier = filter_estimator.predict(xy)
+    return x[is_inlier == 1], y[is_inlier == 1]
 
 
 class Model0(SciKitLearner):
