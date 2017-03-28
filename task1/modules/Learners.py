@@ -7,10 +7,7 @@ from sklearn import (
     preprocessing,
 )
 
-from modules.AbstractLearner import (
-    NumPyLearner,
-    SciKitLearner,
-)
+from modules.AbstractLearner import SciKitLearner
 
 import matplotlib.pyplot as plt
 
