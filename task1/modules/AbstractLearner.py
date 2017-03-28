@@ -69,4 +69,6 @@ class SciKitLearner(_AbstractLearner):
     _transform = IdTransformer()
 
     def _predict(self, features):
-        return self._model(self._transform.transform(features))
+        if hasattr(self._transform, 'transform'):
+            features = self._transform.transform(features)
+        return self._model(features)
