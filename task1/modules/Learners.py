@@ -107,6 +107,8 @@ class Model0(SciKitLearner):
         x    = self._train_set.features
         y    = self._train_set.outputs
 
+        x, y = filter_outliers(x, y, n_estimators=200, contamination=0.005)
+
         self._transform = pipeline.Pipeline([
             #('scale', preprocessing.StandardScaler()),
             ('proliferate', preprocessing.PolynomialFeatures(3)),
