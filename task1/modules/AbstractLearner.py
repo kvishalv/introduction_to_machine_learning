@@ -49,23 +49,11 @@ class _AbstractLearner(object):
         raise NotImplementedError
 
 
-class NumPyLearner(_AbstractLearner):
-
-    def _predict(self, features):
-        return np.apply_along_axis(self._model, 1, features)
-
-
 class SciKitLearner(_AbstractLearner):
-
-    def _predict(self, features):
-        return self._model(features)
-
-
-class TransformingSciKitLearner(SciKitLearner):
 
     _transform = None
 
     def _predict(self, features):
-        return super()._predict(
-            self._transform.transform(features)
-        )
+        if hasattr(self._transform, 'transform'):
+            features = self._transform.transform(features)
+        return self._model(features)
