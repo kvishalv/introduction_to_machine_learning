@@ -58,15 +58,7 @@ class NumPyLearner(_AbstractLearner):
 
 class SciKitLearner(_AbstractLearner):
 
-    class IdTransformer(object):
-
-        def __init__(self):
-            return
-
-        def transform(self, features):
-            return features
-
-    _transform = IdTransformer()
+    _transform = None
 
     def _predict(self, features):
         if hasattr(self._transform, 'transform'):
