@@ -2,15 +2,41 @@ import numpy as np
 from scipy import linalg as splin
 from sklearn import (
     feature_selection,
-    ensemble,
     linear_model,
     pipeline,
     preprocessing,
 )
 
-from modules.AbstractLearner import SciKitLearner
+from modules.AbstractLearner import (
+    NumPyLearner,
+    SciKitLearner,
+    TransformingSciKitLearner
+)
 
 import matplotlib.pyplot as plt
+
+
+class MoorePenroseLearner(NumPyLearner):
+
+    def _train(self):
+        a  = self._train_set.features
+        b  = self._train_set.outputs
+        at = np.linalg.pinv(a)
+        x  = at.dot(b)
+        self._model = lambda v: v.dot(x)
+
+
+class QRFactorizationLearner(NumPyLearner):
+
+    def _train(self):
+        a    = self._train_set.features
+        b    = self._train_set.outputs
+        q, r = np.linalg.qr(a)
+        # QRx = b; where Q is orthogonal and R is upper triangular
+        # Rx = Q^T b = (b^T Q)^T = b_proj
+        b_proj = b.transpose().dot(q).transpose()
+        x    = splin.solve_triangular(r, b_proj, overwrite_b=True)
+        self._model = lambda v: v.dot(x)
 
 
 class LinearRegressionLearner(SciKitLearner):
@@ -37,7 +63,7 @@ class RidgeRegressionLearner(SciKitLearner):
         self._model = clf.predict
 
 
-class PolyRidgeRegressionLearner(SciKitLearner):
+class PolyRidgeRegressionLearner(TransformingSciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -85,7 +111,7 @@ class ElasticNetLearner(SciKitLearner):
         self._model = clf.predict
 
 
-class PolyTheilSenRegressionLearner(SciKitLearner):
+class PolyTheilSenRegressionLearner(TransformingSciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -106,21 +132,11 @@ class PolyTheilSenRegressionLearner(SciKitLearner):
         self._model = clf.predict
 
 
-def filter_outliers(x, y, **kwargs):
-    xy = np.column_stack((x,y))
-    filter_estimator = ensemble.IsolationForest(random_state=42, **kwargs)
-    filter_estimator.fit(xy)
-    is_inlier = filter_estimator.predict(xy)
-    return x[is_inlier == 1], y[is_inlier == 1]
-
-
-class Model0(SciKitLearner):
+class Model0(TransformingSciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
         y    = self._train_set.outputs
-
-        x, y = filter_outliers(x, y, n_estimators=200, contamination=0.005)
 
         self._transform = pipeline.Pipeline([
             #('scale', preprocessing.StandardScaler()),
@@ -164,7 +180,7 @@ class Model0(SciKitLearner):
         print(val_err, "\n", tr_err, "\n", alp)
 
 
-class SelectKBestLearner(SciKitLearner):
+class SelectKBestLearner(TransformingSciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
