@@ -51,16 +51,6 @@ class PolyRidgeRegressionLearner(SciKitLearner):
         self._model = clf.predict
 
 
-class LassoRegressionLearner(SciKitLearner):
-    def _train(self):
-        x    = self._train_set.features
-        y    = self._train_set.outputs
-
-        clf = linear_model.Lasso(alpha = 100, max_iter=1e8)
-        clf.fit(x, y)
-        self._model = clf.predict
-
-
 class PolyLassoRegressionLearner(SciKitLearner):
     def _train(self):
         x    = self._train_set.features
