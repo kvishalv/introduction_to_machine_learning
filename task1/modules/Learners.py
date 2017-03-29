@@ -139,19 +139,6 @@ class Model0(SciKitLearner):
         print(val_err, "\n", tr_err, "\n", alp)
 
 
-class SelectKBestLearner(SciKitLearner):
-
-    def _train(self):
-        x    = self._train_set.features
-        y    = self._train_set.outputs
-
-        self._transform = feature_selection.SelectKBest(score_func=feature_selection.f_regression, k=10)
-
-        clf = linear_model.Ridge(alpha=500, fit_intercept=True,)
-        clf.fit(self._transform.fit_transform(x, y), y)
-        self._model = clf.predict
-
-
 class BayesianRidgeRegression(SciKitLearner):
 
     def _train(self):
