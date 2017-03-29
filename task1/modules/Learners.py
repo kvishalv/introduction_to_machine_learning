@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy import linalg as splin
 from sklearn import (
     feature_selection,
@@ -10,12 +11,8 @@ from sklearn import (
 )
 
 from modules.AbstractLearner import (
-    NumPyLearner,
     SciKitLearner,
-    TransformingSciKitLearner
 )
-
-import matplotlib.pyplot as plt
 
 
 NAMES = [
@@ -28,29 +25,6 @@ NAMES = [
 ]
 
 
-class MoorePenroseLearner(NumPyLearner):
-
-    def _train(self):
-        a  = self._train_set.features
-        b  = self._train_set.outputs
-        at = np.linalg.pinv(a)
-        x  = at.dot(b)
-        self._model = lambda v: v.dot(x)
-
-
-class QRFactorizationLearner(NumPyLearner):
-
-    def _train(self):
-        a    = self._train_set.features
-        b    = self._train_set.outputs
-        q, r = np.linalg.qr(a)
-        # QRx = b; where Q is orthogonal and R is upper triangular
-        # Rx = Q^T b = (b^T Q)^T = b_proj
-        b_proj = b.transpose().dot(q).transpose()
-        x    = splin.solve_triangular(r, b_proj, overwrite_b=True)
-        self._model = lambda v: v.dot(x)
-
-
 class LinearRegressionLearner(SciKitLearner):
 
     def _train(self):
@@ -61,21 +35,7 @@ class LinearRegressionLearner(SciKitLearner):
         self._model = clf.predict
 
 
-class RidgeRegressionLearner(SciKitLearner):
-
-    def _train(self):
-        x    = self._train_set.features
-        y    = self._train_set.outputs
-        clf = linear_model.Ridge(
-            alpha=10,
-            fit_intercept=True,
-            random_state=42
-        )
-        clf.fit(x, y)
-        self._model = clf.predict
-
-
-class PolyRidgeRegressionLearner(TransformingSciKitLearner):
+class PolyRidgeRegressionLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -91,17 +51,7 @@ class PolyRidgeRegressionLearner(TransformingSciKitLearner):
         self._model = clf.predict
 
 
-class LassoRegressionLearner(SciKitLearner):
-    def _train(self):
-        x    = self._train_set.features
-        y    = self._train_set.outputs
-
-        clf = linear_model.Lasso(alpha = 100, max_iter=1e8)
-        clf.fit(x, y)
-        self._model = clf.predict
-
-
-class PolyLassoRegressionLearner(TransformingSciKitLearner):
+class PolyLassoRegressionLearner(SciKitLearner):
     def _train(self):
         x    = self._train_set.features
         y    = self._train_set.outputs
@@ -123,16 +73,13 @@ class ElasticNetLearner(SciKitLearner):
         self._model = clf.predict
 
 
-class PolyTheilSenRegressionLearner(TransformingSciKitLearner):
+class PolyTheilSenRegressionLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
         y    = self._train_set.outputs
 
-        self._transform = preprocessing.PolynomialFeatures(
-            2,
-            interaction_only=False,
-        )
+        self._transform = preprocessing.PolynomialFeatures(2)
 
         clf = linear_model.TheilSenRegressor(
             fit_intercept=True,
@@ -144,7 +91,7 @@ class PolyTheilSenRegressionLearner(TransformingSciKitLearner):
         self._model = clf.predict
 
 
-class Model0(TransformingSciKitLearner):
+class Model0(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -192,20 +139,7 @@ class Model0(TransformingSciKitLearner):
         print(val_err, "\n", tr_err, "\n", alp)
 
 
-class SelectKBestLearner(TransformingSciKitLearner):
-
-    def _train(self):
-        x    = self._train_set.features
-        y    = self._train_set.outputs
-
-        self._transform = feature_selection.SelectKBest(score_func=feature_selection.f_regression, k=10)
-
-        clf = linear_model.Ridge(alpha=500, fit_intercept=True,)
-        clf.fit(self._transform.fit_transform(x, y), y)
-        self._model = clf.predict
-
-
-class BayesianRidgeRegression(TransformingSciKitLearner):
+class BayesianRidgeRegression(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -221,7 +155,7 @@ class BayesianRidgeRegression(TransformingSciKitLearner):
         self._model = clf.predict
 
 
-class LarsLearner(TransformingSciKitLearner):
+class LarsLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -235,7 +169,7 @@ class LarsLearner(TransformingSciKitLearner):
         self._model = clf.predict
 
 
-class LassoLarsLearner(TransformingSciKitLearner):
+class LassoLarsLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -249,7 +183,7 @@ class LassoLarsLearner(TransformingSciKitLearner):
         self._model = clf.predict
 
 
-class OrthogonalMatchingPursuit(TransformingSciKitLearner):
+class OrthogonalMatchingPursuit(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -318,7 +252,7 @@ class GridLearner(SciKitLearner):
         self._model = grid.predict
 
 
-class ARDRegressionLearner(TransformingSciKitLearner):
+class ARDRegressionLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
