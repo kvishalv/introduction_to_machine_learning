@@ -8,14 +8,7 @@ import warnings
 
 warnings.simplefilter("ignore")
 OUTPUT    = True
-VALIDATE  = False
-#learner = Model0()
-#learner = PolyRidgeRegressionLearner()
-learner = PolyLassoRegressionLearner()
-#learner = SelectKBestLearner()
-#learner = BayesianRidgeRegression()
-#learner = ElasticNetLearner()
-#learner = LarsLearner()
+VALIDATE  = True
 learner = LassoLarsLearner()
 #learner = OrthogonalMatchingPursuit()
 #learner = ARDRegressionLearner()
