@@ -214,25 +214,23 @@ class GridLearner(SciKitLearner):
         #x, y = filter_outliers(x, y, n_estimators=200, contamination=0.01)
 
         pipe = pipeline.Pipeline([
-            #('cosin', preprocessing.FunctionTransformer(add_sinus_cosinus)),
-        #    ('kselect', feature_selection.SelectKBest(feature_selection.f_regression, k=15)),
-            ('expand', preprocessing.PolynomialFeatures(include_bias=False)),
+            #('kselect', feature_selection.SelectKBest(feature_selection.f_regression, k=15)),
+            ('expand', preprocessing.PolynomialFeatures()),
             ('estim', linear_model.ElasticNet())
         ])
 
         param_grid = [{
+            'expand__include_bias': [False],
             'expand__degree': [3],
-            'estim': [linear_model.ElasticNet()],
+
             'estim__fit_intercept': [True],
             #'estim__alpha': [0.1, 0.2, 0.5, 1, 2, 5],
             'estim__alpha': [0.325, 0.33, 0.335],
             'estim__l1_ratio': [0.86, 0.865, 0.87],
-            #'lasso__alpha': list(0.315 + 0.001 * i for i in range(10)),
         }]
 
         grid = model_selection.GridSearchCV(
-            pipe, cv=6, n_jobs=4, param_grid=param_grid,
-            verbose=1
+            pipe, cv=6, n_jobs=4, param_grid=param_grid, verbose=1
         )
         grid.fit(x, y)
 
