@@ -51,7 +51,11 @@ class _AbstractLearner(object):
 
 class SciKitLearner(_AbstractLearner):
 
+    _transform = None
+
     def _predict(self, features):
+        if hasattr(self._transform, 'transform'):
+            features = self._transform.transform(features)
         return self._model(features)
 
 
