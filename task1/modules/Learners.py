@@ -36,20 +36,6 @@ class LinearRegressionLearner(SciKitLearner):
         self._model = clf.predict
 
 
-class RidgeRegressionLearner(SciKitLearner):
-
-    def _train(self):
-        x    = self._train_set.features
-        y    = self._train_set.outputs
-        clf = linear_model.Ridge(
-            alpha=10,
-            fit_intercept=True,
-            random_state=42
-        )
-        clf.fit(x, y)
-        self._model = clf.predict
-
-
 class PolyRidgeRegressionLearner(SciKitLearner):
 
     def _train(self):
