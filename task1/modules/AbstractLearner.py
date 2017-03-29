@@ -57,13 +57,3 @@ class SciKitLearner(_AbstractLearner):
         if hasattr(self._transform, 'transform'):
             features = self._transform.transform(features)
         return self._model(features)
-
-
-class TransformingSciKitLearner(SciKitLearner):
-
-    _transform = None
-
-    def _predict(self, features):
-        return super()._predict(
-            self._transform.transform(features)
-        )
