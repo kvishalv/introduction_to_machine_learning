@@ -11,7 +11,6 @@ from sklearn import (
 
 from modules.AbstractLearner import (
     SciKitLearner,
-    TransformingSciKitLearner
 )
 
 import matplotlib.pyplot as plt
@@ -51,7 +50,7 @@ class RidgeRegressionLearner(SciKitLearner):
         self._model = clf.predict
 
 
-class PolyRidgeRegressionLearner(TransformingSciKitLearner):
+class PolyRidgeRegressionLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -77,7 +76,7 @@ class LassoRegressionLearner(SciKitLearner):
         self._model = clf.predict
 
 
-class PolyLassoRegressionLearner(TransformingSciKitLearner):
+class PolyLassoRegressionLearner(SciKitLearner):
     def _train(self):
         x    = self._train_set.features
         y    = self._train_set.outputs
@@ -99,7 +98,7 @@ class ElasticNetLearner(SciKitLearner):
         self._model = clf.predict
 
 
-class PolyTheilSenRegressionLearner(TransformingSciKitLearner):
+class PolyTheilSenRegressionLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -120,7 +119,7 @@ class PolyTheilSenRegressionLearner(TransformingSciKitLearner):
         self._model = clf.predict
 
 
-class Model0(TransformingSciKitLearner):
+class Model0(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -168,7 +167,7 @@ class Model0(TransformingSciKitLearner):
         print(val_err, "\n", tr_err, "\n", alp)
 
 
-class SelectKBestLearner(TransformingSciKitLearner):
+class SelectKBestLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -181,7 +180,7 @@ class SelectKBestLearner(TransformingSciKitLearner):
         self._model = clf.predict
 
 
-class BayesianRidgeRegression(TransformingSciKitLearner):
+class BayesianRidgeRegression(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -197,7 +196,7 @@ class BayesianRidgeRegression(TransformingSciKitLearner):
         self._model = clf.predict
 
 
-class LarsLearner(TransformingSciKitLearner):
+class LarsLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -211,7 +210,7 @@ class LarsLearner(TransformingSciKitLearner):
         self._model = clf.predict
 
 
-class LassoLarsLearner(TransformingSciKitLearner):
+class LassoLarsLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -225,7 +224,7 @@ class LassoLarsLearner(TransformingSciKitLearner):
         self._model = clf.predict
 
 
-class OrthogonalMatchingPursuit(TransformingSciKitLearner):
+class OrthogonalMatchingPursuit(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
@@ -294,7 +293,7 @@ class GridLearner(SciKitLearner):
         self._model = grid.predict
 
 
-class ARDRegressionLearner(TransformingSciKitLearner):
+class ARDRegressionLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
