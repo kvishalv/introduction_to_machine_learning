@@ -10,9 +10,8 @@ warnings.simplefilter("ignore")
 OUTPUT    = True
 VALIDATE  = True
 learner = LassoLarsLearner()
-#learner = OrthogonalMatchingPursuit()
-#learner = ARDRegressionLearner()
-
+#learner = PolyLassoRegressionLearner()
+#learner = GridLearner()
 
 """
     train_size = 0.9
