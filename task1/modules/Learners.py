@@ -96,7 +96,7 @@ class PolyLassoRegressionLearner(TransformingSciKitLearner):
 
         self._transform = preprocessing.PolynomialFeatures(3)
 
-        clf = linear_model.Lasso(alpha=0.4, max_iter=1e8)
+        clf = linear_model.Lasso(alpha=0.4, max_iter=1e8, tol=1e-10)
         clf.fit(self._transform.fit_transform(x), y)
         self._model = clf.predict
 
@@ -106,7 +106,7 @@ class ElasticNetLearner(SciKitLearner):
         x    = self._train_set.features
         y    = self._train_set.outputs
 
-        clf = linear_model.ElasticNet(1)
+        clf = linear_model.ElasticNet(alpha=0.1, l1_ratio=0.1)
         clf.fit(x, y)
         self._model = clf.predict
 
@@ -190,4 +190,91 @@ class SelectKBestLearner(TransformingSciKitLearner):
 
         clf = linear_model.Ridge(alpha=500, fit_intercept=True,)
         clf.fit(self._transform.fit_transform(x, y), y)
+        self._model = clf.predict
+
+
+class BayesianRidgeRegression(TransformingSciKitLearner):
+
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        self._transform = preprocessing.PolynomialFeatures(3)
+
+        #alpha_1 alpha_2 lambda_1 lambda_2
+
+        clf = linear_model.BayesianRidge(alpha_1=1e-6, alpha_2=1e-6, lambda_1=1e-6, lambda_2=1e-6, compute_score=True, fit_intercept=True)
+        clf.fit(self._transform.fit_transform(x, y), y)
+
+        self._model = clf.predict
+
+
+class LarsLearner(TransformingSciKitLearner):
+
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        self._transform = preprocessing.PolynomialFeatures(1)
+
+        clf = linear_model.Lars(n_nonzero_coefs=400 ,fit_intercept=True)
+        clf.fit(self._transform.fit_transform(x, y), y)
+
+        self._model = clf.predict
+
+
+class LassoLarsLearner(TransformingSciKitLearner):
+
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        self._transform = preprocessing.PolynomialFeatures(3)
+
+        clf = linear_model.LassoLars(alpha=1e-3,fit_intercept=True)
+        clf.fit(self._transform.fit_transform(x, y), y)
+
+        self._model = clf.predict
+
+
+class OrthogonalMatchingPursuit(TransformingSciKitLearner):
+
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        self._transform = preprocessing.PolynomialFeatures(3)
+
+        clf = linear_model.OrthogonalMatchingPursuit(n_nonzero_coefs=235, fit_intercept=True)
+        clf.fit(self._transform.fit_transform(x, y), y)
+
+        self._model = clf.predict
+
+
+class OrthogonalMatchingPursuit(TransformingSciKitLearner):
+
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        self._transform = preprocessing.PolynomialFeatures(3)
+
+        clf = linear_model.OrthogonalMatchingPursuit(n_nonzero_coefs=235, fit_intercept=True)
+        clf.fit(self._transform.fit_transform(x, y), y)
+
+        self._model = clf.predict
+
+
+class ARDRegressionLearner(TransformingSciKitLearner):
+
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        self._transform = preprocessing.PolynomialFeatures(3)
+
+        #alpha_1 alpha_2 lambda_1 lambda_2, threshold_lambda
+        clf = linear_model.ARDRegression(n_iter=70, fit_intercept=True)
+        clf.fit(self._transform.fit_transform(x, y), y)
+
         self._model = clf.predict
