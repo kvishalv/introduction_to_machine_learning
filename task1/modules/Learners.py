@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy import linalg as splin
 from sklearn import (
     feature_selection,
@@ -12,8 +13,6 @@ from sklearn import (
 from modules.AbstractLearner import (
     SciKitLearner,
 )
-
-import matplotlib.pyplot as plt
 
 
 NAMES = [
