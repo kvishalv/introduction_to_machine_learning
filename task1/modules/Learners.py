@@ -5,6 +5,7 @@ from sklearn import (
     feature_selection,
     ensemble,
     linear_model,
+    metrics,
     model_selection,
     pipeline,
     preprocessing,
@@ -230,7 +231,11 @@ class GridLearner(SciKitLearner):
         }]
 
         grid = model_selection.GridSearchCV(
-            pipe, cv=6, n_jobs=4, param_grid=param_grid, verbose=1
+            pipe, cv=6, n_jobs=4, param_grid=param_grid, verbose=1,
+            scoring=metrics.make_scorer(
+                metrics.mean_squared_error,
+                greater_is_better=False
+            )
         )
         grid.fit(x, y)
 
