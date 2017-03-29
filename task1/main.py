@@ -15,12 +15,6 @@ learner = LassoLarsLearner()
 
 """
     train_size = 0.9
-    PolyRidgeRegressionLearner: 1.40300900669e-07, alpha 100, poly 2, score: 25.3610838203
-    PolyRidgeRegressionLearner: 1.40301129493e-08, alpha 10, poly 2, score: 25.0035653032
-    PolyRidgeRegressionLearner: 1.91697708794e-07, alpha 100, poly 3, score: 41.0132351669
-    Model0: 3.82868235438e-06, alpha 2000, poly 3, %90, score: 19.4278482076
-    Model0: 1.61280520677e-06, alpha 800, poly 3, %98, score: 17.4999891433
-
     generalize optimum finder and its reporting
     add distributions for all x values as well and their correlations
 """
