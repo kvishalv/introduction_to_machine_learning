@@ -79,10 +79,7 @@ class PolyTheilSenRegressionLearner(SciKitLearner):
         x    = self._train_set.features
         y    = self._train_set.outputs
 
-        self._transform = preprocessing.PolynomialFeatures(
-            2,
-            interaction_only=False,
-        )
+        self._transform = preprocessing.PolynomialFeatures(2)
 
         clf = linear_model.TheilSenRegressor(
             fit_intercept=True,
