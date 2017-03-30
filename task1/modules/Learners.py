@@ -224,10 +224,10 @@ class GridLearner(SciKitLearner):
             'expand__include_bias': [False],
             'expand__degree': [3],
 
+            'estim__normalize': [False],
             'estim__fit_intercept': [True],
-            #'estim__alpha': [0.1, 0.2, 0.5, 1, 2, 5],
-            'estim__alpha': [0.325, 0.33, 0.335],
-            'estim__l1_ratio': [0.86, 0.865, 0.87],
+            'estim__alpha': list(0.32 + 0.001 * i for i in range(0, 6)),
+            'estim__l1_ratio': list(0.80 + 0.001 * i for i in range(0, 6))
         }]
 
         grid = model_selection.GridSearchCV(
