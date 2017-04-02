@@ -15,10 +15,6 @@ learner = LassoLarsLearner()
 learner = GridLearner()
 
 
-"""
-"""
-
-
 def main():
     train_set = CSVDataSet.from_train_data('data/train.csv', dtype=np.double)
     if VALIDATE:
