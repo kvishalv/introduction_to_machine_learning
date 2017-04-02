@@ -184,6 +184,35 @@ class LassoLarsLearner(SciKitLearner):
         self._model = clf.predict
 
 
+
+class LassoLarsCVLearner(SciKitLearner):
+
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        self._transform = preprocessing.PolynomialFeatures(1)
+
+        clf = linear_model.LassoLarsCV(fit_intercept=True)
+        clf.fit(self._transform.fit_transform(x, y), y)
+
+        self._model = clf.predict
+
+
+class LassoLarsICLearner(SciKitLearner):
+
+    def _train(self):
+        x    = self._train_set.features
+        y    = self._train_set.outputs
+
+        self._transform = preprocessing.PolynomialFeatures(1)
+
+        clf = linear_model.LassoLarsCV(fit_intercept=True)
+        clf.fit(self._transform.fit_transform(x, y), y)
+
+        self._model = clf.predict
+
+
 class OrthogonalMatchingPursuit(SciKitLearner):
 
     def _train(self):
@@ -212,12 +241,12 @@ class GridLearner(SciKitLearner):
         x    = self._train_set.features
         y    = self._train_set.outputs
 
-        #x, y = filter_outliers(x, y, n_estimators=200, contamination=0.01)
+        x, y = filter_outliers(x, y, n_estimators=200, contamination=0.003)
 
         pipe = pipeline.Pipeline([
             #('kselect', feature_selection.SelectKBest(feature_selection.f_regression, k=15)),
             ('expand', preprocessing.PolynomialFeatures()),
-            ('estim', linear_model.ElasticNet())
+            ('estim', linear_model.LassoLars())
         ])
 
         param_grid = [{
@@ -226,13 +255,14 @@ class GridLearner(SciKitLearner):
 
             'estim__normalize': [False],
             'estim__fit_intercept': [True],
-            'estim__alpha': list(0.32 + 0.001 * i for i in range(0, 6)),
-            'estim__l1_ratio': list(0.80 + 0.001 * i for i in range(0, 6))
+            'estim__alpha': [0.313]
+            #'estim__alpha': list(0.01 + 1 * i for i in range(0, 9))
+            #'estim__l1_ratio': list(0.80 + 0.01 * i for i in range(0, 6))
         }]
 
         grid = model_selection.GridSearchCV(
-            pipe, cv=6, n_jobs=4, param_grid=param_grid, verbose=1,
-            scoring=metrics.make_scorer(
+            pipe, cv=3, n_jobs=1, param_grid=param_grid, verbose=1,
+            scoring = metrics.make_scorer(
                 metrics.mean_squared_error,
                 greater_is_better=False
             )
@@ -240,6 +270,7 @@ class GridLearner(SciKitLearner):
         grid.fit(x, y)
 
         print(grid.best_estimator_)
+        print(grid.cv_results_)
 
         estim = grid.best_estimator_.named_steps['estim']
         coeffs = estim.coef_
@@ -264,7 +295,7 @@ class ARDRegressionLearner(SciKitLearner):
         self._transform = preprocessing.PolynomialFeatures(3)
 
         #alpha_1 alpha_2 lambda_1 lambda_2, threshold_lambda
-        clf = linear_model.ARDRegression(n_iter=70, fit_intercept=True)
+        clf = linear_model.ARDRegression(n_iter=3, fit_intercept=True)
         clf.fit(self._transform.fit_transform(x, y), y)
 
         self._model = clf.predict

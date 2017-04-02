@@ -3,6 +3,8 @@ from sklearn import model_selection
 import matplotlib.pyplot as plt
 
 
+SHUFFLE = True
+
 class CSVDataSet(object):
 
     def __init__(self, ids, features, outputs):
@@ -13,6 +15,8 @@ class CSVDataSet(object):
     @classmethod
     def from_train_data(cls, filename, dtype=np.longdouble):
         data = cls._csv_to_array(filename, dtype)
+        if SHUFFLE:
+            np.random.shuffle(data)
         train_id = data[:, 0].astype('int')
         train_y = data[:, 1]
         train_features = data[:, 2:]
@@ -21,6 +25,8 @@ class CSVDataSet(object):
     @classmethod
     def from_test_data(cls, filename, dtype=np.longdouble):
         data = cls._csv_to_array(filename, dtype)
+        if SHUFFLE:
+            np.random.shuffle(data)
         test_id = data[:, 0].astype('int')
         test_features = data[:, 1:]
         return cls(test_id, test_features, None)
