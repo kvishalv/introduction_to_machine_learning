@@ -10,12 +10,12 @@ Methods:
 "BayesianRidge Regression"
 "Lars"
 "Lasso-Lars"
-"Lasso-LarsCV"
+"Lasso-LarsCV"N
 "Lasso-LarsIC"
 "Orthogonal Matching Pursuit"
 "ARD Regression"
 
-Lasso-Lars and Lasso had significantly better results than others, therefore we focused on those methods thereafter. 
+Lasso-Lars and Lasso had significantly better results than others, therefore we focused on those methods thereafter.
 
 Data Pre-Processing:
 - Remove outliers (~3 of them, did not help at all)
@@ -25,20 +25,19 @@ Data Pre-Processing:
 	- Generate a new feature matrix consisting of all polynomial combinations of the features with degree less than or equal to the specified degree.
 
 Optimizing Parameters:
-We used GridSearchCV for different values of alpha up to three significant figures. 
+We used GridSearchCV for different values of alpha up to three significant figures.
 
-For Lasso, we have found a good performance for alpha value of 0.241. 
-For Lasso-Lars, we have found a good performance for alpha value of 0.313. 
+For Lasso, we have found a good performance for alpha value of 0.241.
+For Lasso-Lars, we have found a good performance for alpha value of 0.313.
 
-Lasso performed slightly better than Lasso-Lars, therefore we ended up preferring that. 
+Lasso performed slightly better than Lasso-Lars, therefore we ended up preferring that.
 
 Cross Validation:
 - Shuffling of data
 - Manually split data into test and validation set in order to minimize overfitting
 	- Small difference between test and validation set
-- Plotted the learning curve showing the validation and training to check how much we benefit from adding more training data 
+- Plotted the learning curve showing the validation and training to check how much we benefit from adding more training data
 
 
 Summary:
-We ended up using Lasso with alpha 0.241 and polynomial degree of 3. It has been cross-validated in two different methods and both returned reasonably good results. 
-
+We ended up using Lasso with alpha 0.241 and polynomial degree of 3. It has been cross-validated in two different methods and both returned reasonably good results.
