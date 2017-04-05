@@ -1,0 +1,12 @@
+Description task 1
+First, we tried a number of different approaches including
+
+Methods:
+
+Data Pre-Processing:
+
+Optimizing Parameters:
+
+Cross Validation:
+
+Summary:
