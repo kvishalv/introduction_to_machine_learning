@@ -6,3 +6,4 @@ train_result.csv
 *.swp
 *.pyc
 __pycache__
+description_self.txt
