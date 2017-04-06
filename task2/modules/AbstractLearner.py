@@ -37,6 +37,10 @@ class _AbstractLearner(object):
         return self.rms_error(predictions, self._train_set.outputs)
 
     @staticmethod
+    def accuracy(predictions, true_values):
+        return metrics.accuracy_score(predictions, true_values)
+
+    @staticmethod
     def rms_error(predictions, true_values):
         return metrics.mean_squared_error(predictions, true_values) ** 0.5
 
