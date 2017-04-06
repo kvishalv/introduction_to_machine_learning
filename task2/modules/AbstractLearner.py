@@ -12,7 +12,6 @@ class _AbstractLearner(object):
     # _train_set and _test_set are CSVDataSet instances
     def __init__(self):
         self._train_set = None
-        self._test_set  = None
 
     # Calls self._train
     def learn_from(self, train_set):
