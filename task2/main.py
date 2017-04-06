@@ -18,12 +18,17 @@ def main():
     if VALIDATE:
         train_set, validation_set = train_set.split(train_size=0.70)
     learner.learn_from(train_set)
-    print("Training error for", learner.__class__.__name__, "is:", learner.train_error)
+
+    tacc = learner.train_error
+    print('Scoring:')
+    print('=======')
+    print("Classifier:", learner.__class__.__name__)
+    print("    Training accuracy  : ", tacc)
 
     if VALIDATE:
-        verror = learner.validate_against(validation_set)
-        print("Validation error for", learner.__class__.__name__, "is:", verror)
-        print("Validation error - training error:", learner.__class__.__name__, "is:", verror-learner.train_error)
+        vacc = learner.validate_against(validation_set)
+        print("    Validation accuracy: ", vacc)
+        print("    Difference         : ", vacc - tacc)
 
     if OUTPUT:
         test_set = CSVDataSet.from_test_data('data/test.csv')
