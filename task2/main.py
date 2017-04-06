@@ -26,7 +26,8 @@ def main():
     print("    Training accuracy  : ", tacc)
 
     if VALIDATE:
-        vacc = learner.validate_against(validation_set)
+        x_val, y_val = validation_set.features, validation_set.outputs
+        vacc = learner.validate_against(x_val, y_val)
         print("    Validation accuracy: ", vacc)
         print("    Difference         : ", vacc - tacc)
 

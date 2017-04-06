@@ -25,9 +25,9 @@ class _AbstractLearner(object):
         raise NotImplementedError
 
     # Calls self._predict
-    def validate_against(self, validation_set):
-        predictions = self.predict_from(validation_set.features)
-        return self.accuracy(predictions, validation_set.outputs)
+    def validate_against(self, features, outputs):
+        predictions = self.predict_from(features)
+        return self.accuracy(predictions, outputs)
 
     @property
     # Calls self._predict
