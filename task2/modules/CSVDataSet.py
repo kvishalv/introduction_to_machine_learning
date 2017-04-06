@@ -12,8 +12,8 @@ class CSVDataSet(object):
         self.outputs = outputs
 
     @classmethod
-    def from_train_data(cls, filename, dtype=np.longdouble):
-        data = cls._csv_to_array(filename, dtype)
+    def from_train_data(cls, filename):
+        data = cls._csv_to_array(filename)
         if SHUFFLE:
             np.random.shuffle(data)
         train_id = data[:, 0].astype('int')
@@ -22,8 +22,8 @@ class CSVDataSet(object):
         return cls(train_id, train_features, train_y)
 
     @classmethod
-    def from_test_data(cls, filename, dtype=np.longdouble):
-        data = cls._csv_to_array(filename, dtype)
+    def from_test_data(cls, filename):
+        data = cls._csv_to_array(filename)
         if SHUFFLE:
             np.random.shuffle(data)
         test_id = data[:, 0].astype('int')
@@ -31,7 +31,7 @@ class CSVDataSet(object):
         return cls(test_id, test_features, None)
 
     @staticmethod
-    def _csv_to_array(filename, dtype):
+    def _csv_to_array(filename):
         """
         Returns contents of `filename` CSV file as a numpy array.
 
@@ -40,7 +40,7 @@ class CSVDataSet(object):
         Note: Assumes and ignores exactly one header line.
         """
         return np.genfromtxt(
-            filename, delimiter=',', dtype=dtype, skip_header=True
+            filename, delimiter=',', skip_header=True
         )
 
     def write_labelled_output(self, filename):

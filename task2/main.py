@@ -14,7 +14,7 @@ learner = GridLearner()
 
 
 def main():
-    train_set = CSVDataSet.from_train_data('data/train.csv', dtype=np.double)
+    train_set = CSVDataSet.from_train_data('data/train.csv')
     if VALIDATE:
         train_set, validation_set = train_set.split(train_size=0.70)
     learner.learn_from(train_set)
@@ -26,7 +26,7 @@ def main():
         print("Validation error - training error:", learner.__class__.__name__, "is:", verror-learner.train_error)
 
     if OUTPUT:
-        test_set = CSVDataSet.from_test_data('data/test.csv', dtype=np.double)
+        test_set = CSVDataSet.from_test_data('data/test.csv')
         out_set = learner.predict_from(test_set)
         out_set.write_labelled_output('test_result.csv')
 
