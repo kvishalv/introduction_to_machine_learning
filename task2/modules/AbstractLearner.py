@@ -43,10 +43,6 @@ class _AbstractLearner(object):
     def _train(self):
         raise NotImplementedError
 
-    @abc.abstractmethod
-    def _predict(self, features):
-        raise NotImplementedError
-
 
 class SciKitLearner(_AbstractLearner):
 
