@@ -15,8 +15,8 @@ from modules.AbstractLearner import (
 class NaiveBayesLearner(SciKitLearner):
 
     def _train(self):
-        x    = self._train_set.features
-        y    = self._train_set.outputs
+        x = self._train_features
+        y = self._train_outputs
 
         pipe = pipeline.Pipeline([
             ('scale', preprocessing.StandardScaler()),

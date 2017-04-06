@@ -9,13 +9,15 @@ class _AbstractLearner(object):
 
     _model = NotImplemented
 
-    # _train_set and _test_set are CSVDataSet instances
+    # _train_features and _train_outputs are NumPy arrays
     def __init__(self):
-        self._train_set = None
+        self._train_features = None
+        self._train_outputs = None
 
     # Calls self._train
-    def learn_from(self, train_set):
-        self._train_set = train_set
+    def learn_from(self, features, outputs):
+        self._train_features = features
+        self._train_outputs = outputs
         self._train()
 
     # Calls self._predict
@@ -30,8 +32,8 @@ class _AbstractLearner(object):
     @property
     # Calls self._predict
     def train_error(self):
-        predictions = self._predict(self._train_set.features)
-        return self.accuracy(predictions, self._train_set.outputs)
+        predictions = self._predict(self._train_features)
+        return self.accuracy(predictions, self._train_outputs)
 
     @staticmethod
     def accuracy(predictions, true_values):

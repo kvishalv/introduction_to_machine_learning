@@ -17,7 +17,7 @@ def main():
     train_set = CSVDataSet.from_train_data('data/train.csv')
     if VALIDATE:
         train_set, validation_set = train_set.split(train_size=0.70)
-    learner.learn_from(train_set)
+    learner.learn_from(train_set.features, train_set.outputs)
 
     tacc = learner.train_error
     print('Scoring:')
