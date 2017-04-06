@@ -12,9 +12,9 @@ class CSVDataSet(object):
         self.outputs = outputs
 
     @classmethod
-    def from_train_data(cls, filename):
+    def from_train_data(cls, filename, shuffle=SHUFFLE):
         data = cls._csv_to_array(filename)
-        if SHUFFLE:
+        if shuffle:
             np.random.shuffle(data)
         train_id = data[:, 0].astype('int')
         train_y = data[:, 1]
@@ -22,9 +22,9 @@ class CSVDataSet(object):
         return cls(train_id, train_features, train_y)
 
     @classmethod
-    def from_test_data(cls, filename):
+    def from_test_data(cls, filename, shuffle=SHUFFLE):
         data = cls._csv_to_array(filename)
-        if SHUFFLE:
+        if shuffle:
             np.random.shuffle(data)
         test_id = data[:, 0].astype('int')
         test_features = data[:, 1:]
