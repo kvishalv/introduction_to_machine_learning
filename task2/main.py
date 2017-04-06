@@ -32,8 +32,8 @@ def main():
 
     if OUTPUT:
         test_set = CSVDataSet.from_test_data('data/test.csv')
-        out_set = learner.predict_from(test_set)
-        out_set.write_labelled_output('test_result.csv')
+        test_set.outputs = learner.predict_from(test_set)
+        test_set.write_labelled_output('test_result.csv')
 
 
 if __name__ == '__main__':

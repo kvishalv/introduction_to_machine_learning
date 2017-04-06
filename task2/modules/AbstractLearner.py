@@ -21,9 +21,7 @@ class _AbstractLearner(object):
 
     # Calls self._predict
     def predict_from(self, test_set):
-        self._test_set = test_set
-        self._test_set.outputs = self._predict(self._test_set.features)
-        return self._test_set
+        return self._predict(test_set.features)
 
     # Calls self._predict
     def validate_against(self, validation_set):
