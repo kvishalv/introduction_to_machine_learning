@@ -10,7 +10,7 @@ from modules.Learners import *
 warnings.simplefilter("ignore")
 OUTPUT    = True
 VALIDATE  = True
-learner = GridLearner()
+learner = NaiveBayesLearner()
 
 
 def main():

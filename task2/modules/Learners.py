@@ -1,11 +1,8 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from sklearn import (
-    feature_selection,
-    ensemble,
-    linear_model,
     metrics,
     model_selection,
+    naive_bayes,
     pipeline,
     preprocessing,
 )
@@ -33,49 +30,37 @@ def filter_outliers(x, y, **kwargs):
     return x[is_inlier == 1], y[is_inlier == 1]
 
 
-class GridLearner(SciKitLearner):
+class NaiveBayesLearner(SciKitLearner):
 
     def _train(self):
         x    = self._train_set.features
         y    = self._train_set.outputs
 
-        x, y = filter_outliers(x, y, n_estimators=200, contamination=0.003)
+        #x, y = filter_outliers(x, y, n_estimators=200, contamination=0.003)
 
         pipe = pipeline.Pipeline([
+            ('scale', preprocessing.StandardScaler()),
             ('expand', preprocessing.PolynomialFeatures()),
-            ('estim', linear_model.LassoLars())
+            ('estim', naive_bayes.GaussianNB())
         ])
 
         param_grid = [{
-            'expand__include_bias': [False],
-            'expand__degree': [3],
+            'scale__with_mean': [True, False],
+            'scale__with_std': [True, False],
 
-            'estim__normalize': [False],
-            'estim__fit_intercept': [True],
-            'estim__alpha': [0.313]
+            'expand__include_bias': [False, True],
+            'expand__degree': [1, 2, 3],
         }]
 
         grid = model_selection.GridSearchCV(
             pipe, cv=3, n_jobs=1, param_grid=param_grid, verbose=1,
-            scoring = metrics.make_scorer(
-                metrics.mean_squared_error,
-                greater_is_better=False
-            )
+            scoring = metrics.make_scorer(metrics.accuracy_score),
         )
         grid.fit(x, y)
 
-        print(grid.best_estimator_)
-        print(grid.cv_results_)
-
-        """
-        estim = grid.best_estimator_.named_steps['estim']
-        coeffs = estim.coef_
-
-        polyexp = grid.best_estimator_.named_steps['expand']
-        f_names = polyexp.get_feature_names(NAMES[1:])
-
-        for elem in sorted(zip(coeffs, f_names), reverse=True):
-            print(elem)
-        """
+        print('Optimal Hyperparametres:')
+        print('=======================')
+        for step in grid.best_estimator_.steps:
+            print(step)
 
         self._model = grid.predict
