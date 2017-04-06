@@ -39,10 +39,6 @@ class _AbstractLearner(object):
     def accuracy(predictions, true_values):
         return metrics.accuracy_score(predictions, true_values)
 
-    @staticmethod
-    def rms_error(predictions, true_values):
-        return metrics.mean_squared_error(predictions, true_values) ** 0.5
-
     @abc.abstractmethod
     def _train(self):
         raise NotImplementedError
