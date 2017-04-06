@@ -24,13 +24,13 @@ class _AbstractLearner(object):
     def predict_from(self, features):
         raise NotImplementedError
 
-    # Calls self._predict
+    # Calls self.predict_from
     def validate_against(self, features, outputs):
         predictions = self.predict_from(features)
         return self.accuracy(predictions, outputs)
 
     @property
-    # Calls self._predict
+    # Calls self.predict_from
     def train_error(self):
         predictions = self.predict_from(self._train_features)
         return self.accuracy(predictions, self._train_outputs)
