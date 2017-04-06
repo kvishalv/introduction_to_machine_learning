@@ -26,13 +26,13 @@ class _AbstractLearner(object):
 
     # Calls self._predict
     def validate_against(self, validation_set):
-        predictions = self._predict(validation_set.features)
+        predictions = self.predict_from(validation_set.features)
         return self.accuracy(predictions, validation_set.outputs)
 
     @property
     # Calls self._predict
     def train_error(self):
-        predictions = self._predict(self._train_features)
+        predictions = self.predict_from(self._train_features)
         return self.accuracy(predictions, self._train_outputs)
 
     @staticmethod
