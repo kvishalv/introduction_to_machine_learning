@@ -32,7 +32,7 @@ def main():
 
     if OUTPUT:
         test_set = CSVDataSet.from_test_data('data/test.csv')
-        test_set.outputs = learner.predict_from(test_set)
+        test_set.outputs = learner.predict_from(test_set.features)
         test_set.write_labelled_output('test_result.csv')
 
 
