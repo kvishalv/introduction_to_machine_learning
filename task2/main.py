@@ -3,6 +3,7 @@
 import warnings
 
 import numpy as np
+from sklearn import model_selection
 
 from modules.CSVDataSet import *
 from modules.Learners import *
@@ -17,7 +18,10 @@ def main():
     train_set = CSVDataSet.from_train_data('data/train.csv')
     x_train, y_train = train_set.features, train_set.outputs
     if VALIDATE:
-        train_set, validation_set = train_set.split(train_size=0.70)
+        x_train, x_val, y_train, y_val = model_selection.train_test_split(
+            x_train, y_train,
+            train_size=0.70,
+        )
     learner.learn_from(x_train, y_train)
 
     tacc = learner.train_error
@@ -27,7 +31,6 @@ def main():
     print("    Training accuracy  : ", tacc)
 
     if VALIDATE:
-        x_val, y_val = validation_set.features, validation_set.outputs
         vacc = learner.validate_against(x_val, y_val)
         print("    Validation accuracy: ", vacc)
         print("    Difference         : ", vacc - tacc)
