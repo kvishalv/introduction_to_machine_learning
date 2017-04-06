@@ -20,9 +20,9 @@ class _AbstractLearner(object):
         self._train_outputs = outputs
         self._train()
 
-    # Calls self._predict
+    @abc.abstractmethod
     def predict_from(self, features):
-        return self._predict(features)
+        raise NotImplementedError
 
     # Calls self._predict
     def validate_against(self, validation_set):
