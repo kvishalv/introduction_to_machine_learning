@@ -15,9 +15,10 @@ learner = NaiveBayesLearner()
 
 def main():
     train_set = CSVDataSet.from_train_data('data/train.csv')
+    x_train, y_train = train_set.features, train_set.outputs
     if VALIDATE:
         train_set, validation_set = train_set.split(train_size=0.70)
-    learner.learn_from(train_set.features, train_set.outputs)
+    learner.learn_from(x_train, y_train)
 
     tacc = learner.train_error
     print('Scoring:')
