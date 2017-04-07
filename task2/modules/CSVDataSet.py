@@ -13,7 +13,7 @@ class CSVDataSet(object):
     def from_train_data(cls, filename):
         data = cls._csv_to_array(filename)
         train_id = data[:, 0].astype('int')
-        train_y = data[:, 1]
+        train_y = data[:, 1].astype('int')
         train_features = data[:, 2:]
         return cls(train_id, train_features, train_y)
 
