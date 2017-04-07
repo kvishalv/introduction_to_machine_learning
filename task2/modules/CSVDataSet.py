@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-SHUFFLE = True
 
 class CSVDataSet(object):
 
@@ -11,20 +10,16 @@ class CSVDataSet(object):
         self.outputs = outputs
 
     @classmethod
-    def from_train_data(cls, filename, shuffle=SHUFFLE):
+    def from_train_data(cls, filename):
         data = cls._csv_to_array(filename)
-        if shuffle:
-            np.random.shuffle(data)
         train_id = data[:, 0].astype('int')
         train_y = data[:, 1]
         train_features = data[:, 2:]
         return cls(train_id, train_features, train_y)
 
     @classmethod
-    def from_test_data(cls, filename, shuffle=SHUFFLE):
+    def from_test_data(cls, filename):
         data = cls._csv_to_array(filename)
-        if shuffle:
-            np.random.shuffle(data)
         test_id = data[:, 0].astype('int')
         test_features = data[:, 1:]
         return cls(test_id, test_features, None)
