@@ -29,11 +29,12 @@ class NaiveBayesLearner(SciKitLearner):
             'scale__with_std': [True, False],
 
             'expand__include_bias': [False, True],
-            'expand__degree': [1, 2, 3],
+            'expand__interaction_only': [False, True],
+            'expand__degree': [1, 2, 3, 4],
         }]
 
         grid = model_selection.GridSearchCV(
-            pipe, cv=3, n_jobs=1, param_grid=param_grid, verbose=1,
+            pipe, cv=5, n_jobs=4, param_grid=param_grid, verbose=1,
             scoring = metrics.make_scorer(metrics.accuracy_score),
         )
         grid.fit(x, y)

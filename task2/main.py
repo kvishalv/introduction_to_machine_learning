@@ -20,7 +20,7 @@ def main():
     if VALIDATE:
         x_train, x_val, y_train, y_val = model_selection.train_test_split(
             x_train, y_train,
-            train_size=0.70,
+            train_size=0.90,
             stratify=y_train,
             random_state=1742
         )
