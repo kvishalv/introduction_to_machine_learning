@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn import (
+    feature_selection,
     metrics,
     model_selection,
     naive_bayes,
@@ -21,16 +22,23 @@ class NaiveBayesLearner(SciKitLearner):
         pipe = pipeline.Pipeline([
             ('scale', preprocessing.StandardScaler()),
             ('expand', preprocessing.PolynomialFeatures()),
+            ('select', feature_selection.SelectKBest()),
             ('estim', naive_bayes.GaussianNB())
         ])
 
         param_grid = [{
             'scale__with_mean': [True, False],
-            'scale__with_std': [True, False],
+            'scale__with_std': [True],
 
-            'expand__include_bias': [False, True],
-            'expand__interaction_only': [False, True],
-            'expand__degree': [1, 2, 3, 4],
+            'expand__include_bias': [False],
+            'expand__interaction_only': [True, False],
+            'expand__degree': [2],
+
+            'select__k': [i for i in range(15, 21)],
+            'select__score_func': [
+                feature_selection.f_classif,
+                #feature_selection.mutual_info_classif
+            ]
         }]
 
         grid = model_selection.GridSearchCV(

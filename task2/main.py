@@ -10,7 +10,7 @@ from modules.Learners import *
 
 warnings.simplefilter("ignore")
 OUTPUT    = True
-VALIDATE  = True
+VALIDATE  = False
 learner = NaiveBayesLearner()
 
 
@@ -20,7 +20,7 @@ def main():
     if VALIDATE:
         x_train, x_val, y_train, y_val = model_selection.train_test_split(
             x_train, y_train,
-            train_size=0.90,
+            train_size=0.95,
             stratify=y_train,
             random_state=1742
         )
