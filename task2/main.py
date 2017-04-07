@@ -11,7 +11,16 @@ from modules.Learners import *
 warnings.simplefilter("ignore")
 OUTPUT    = True
 VALIDATE  = True
-learner = NaiveBayesLearner()
+learner = QuadraticDiscriminantLearner()
+#learner = GridLearner()
+
+""" To Do:
+
+Try Select K best, since some of the features are highly correlated
+Try Removing outliers
+Try robustScaler
+
+"""
 
 
 def main():
@@ -35,7 +44,7 @@ def main():
     if VALIDATE:
         vacc = learner.validate_against(x_val, y_val)
         print("    Validation accuracy: ", vacc)
-        print("    Difference         : ", vacc - tacc)
+        print("    Difference         : ", tacc - vacc )
 
     if OUTPUT:
         test_set = CSVDataSet.from_test_data('data/test.csv')

@@ -1,6 +1,7 @@
 import abc
 
 from sklearn import metrics
+import numpy as np
 
 
 class _AbstractLearner(object):
@@ -21,7 +22,7 @@ class _AbstractLearner(object):
         self._train()
 
     @abc.abstractmethod
-    def predict_from(self, features):
+    def predict_from(self, features, outputs):
         raise NotImplementedError
 
     # Calls self.predict_from
@@ -46,9 +47,12 @@ class _AbstractLearner(object):
 
 class SciKitLearner(_AbstractLearner):
 
+    _scale     = None
     _transform = None
 
     def predict_from(self, features):
+        if hasattr(self._scale, 'transform'):
+            features = self._scale.transform(features)
         if hasattr(self._transform, 'transform'):
             features = self._transform.transform(features)
         return self._model(features)
