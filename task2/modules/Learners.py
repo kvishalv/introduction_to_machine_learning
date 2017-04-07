@@ -15,14 +15,18 @@ class GridLearner(SciKitLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
+            #('select', feature_selection.SelectKBest()),
             ('scale', preprocessing.StandardScaler()),
             ('expand', preprocessing.PolynomialFeatures()),
-            ('estim', discriminant_analysis.QuadraticDiscriminantAnalysis())
+            ('estim', discriminant_analysis.QuadraticDiscriminantAnalysis()),
         ])
 
         param_grid = [{
+            #'select__k': [i for i in range(15, 21)],
+            #'select__score_func': [feature_selection.f_classif],
+
             'scale__with_mean': [True, False],
-            'scale__with_std': [True, False],
+            'scale__with_std': [True],
 
             'expand__include_bias': [False, True],
             'expand__interaction_only': [False, True],
