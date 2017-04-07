@@ -21,7 +21,8 @@ def main():
         x_train, x_val, y_train, y_val = model_selection.train_test_split(
             x_train, y_train,
             train_size=0.70,
-            stratify=y_train
+            stratify=y_train,
+            random_state=1742
         )
     learner.learn_from(x_train, y_train)
 
