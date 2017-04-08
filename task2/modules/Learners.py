@@ -1,11 +1,8 @@
 import numpy as np
 from sklearn import *
-from modules.AbstractLearner import (
-    SciKitLearner,
-)
 
-
-
+from modules.AbstractLearner import SciKitLearner
+from modules import transformers
 
 
 class GridLearner(SciKitLearner):
@@ -15,6 +12,7 @@ class GridLearner(SciKitLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
+            #('drop', transformers.ColumnDropper(columns=(7, 13))),
             #('select', feature_selection.SelectKBest()),
             ('scale', preprocessing.StandardScaler()),
             ('expand', preprocessing.PolynomialFeatures()),
