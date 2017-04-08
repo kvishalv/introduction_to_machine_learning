@@ -57,13 +57,25 @@ class NaiveBayesLearner(SciKitLearner):
         x = self._train_features
         y = self._train_outputs
 
-        self._transform = preprocessing.PolynomialFeatures(2)
+        pipe = pipeline.Pipeline([
+            ('drop', transformers.ColumnDropper(
+                columns=(7, 13)
+            )),
+            ('scale', preprocessing.StandardScaler()),
+            ('expand', preprocessing.PolynomialFeatures(
+                degree=2,
+                interaction_only=True,
+                include_bias=False
+            )),
+            ('select', feature_selection.SelectKBest(
+                score_func=feature_selection.f_classif,
+                k=18
+            )),
+            ('estim', naive_bayes.GaussianNB()),
+        ])
 
-        clf = naive_bayes.GaussianNB()
-        clf.fit(self._transform.fit_transform(x, y), y)
-
-        self._model = clf.predict
-
+        pipe.fit(x, y)
+        self._model = pipe.predict
 
 
 class LinearDiscriminantAnalysis(SciKitLearner):
