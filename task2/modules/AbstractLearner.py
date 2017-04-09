@@ -1,7 +1,6 @@
 import abc
 
 from sklearn import metrics
-import numpy as np
 
 
 class AbstractLearner(object):
