@@ -11,11 +11,11 @@ from sklearn import (
 )
 
 
-from modules.AbstractLearner import SciKitLearner
+from modules.AbstractLearner import AbstractLearner
 from modules import transformers
 
 
-class GridLearner(SciKitLearner):
+class GridLearner(AbstractLearner):
 
     def _train(self):
         x = self._train_features
@@ -61,7 +61,7 @@ class GridLearner(SciKitLearner):
 
 
 
-class NaiveBayesLearner(SciKitLearner):
+class NaiveBayesLearner(AbstractLearner):
 
     def _train(self):
         x = self._train_features
@@ -88,7 +88,7 @@ class NaiveBayesLearner(SciKitLearner):
         self._model = pipe.predict
 
 
-class LinearDiscriminantLearner(SciKitLearner):
+class LinearDiscriminantLearner(AbstractLearner):
 
     def _train(self):
         x = self._train_features
@@ -105,7 +105,7 @@ class LinearDiscriminantLearner(SciKitLearner):
         self._model = pipe.predict
 
 
-class QuadraticDiscriminantLearner(SciKitLearner):
+class QuadraticDiscriminantLearner(AbstractLearner):
 
     def _train(self):
         x = self._train_features
@@ -127,5 +127,5 @@ class QuadraticDiscriminantLearner(SciKitLearner):
         pipe.fit(x, y)
         self._model = pipe.predict
 
-#class SelectKBest(SciKitLearner):
+#class SelectKBest(AbstractLearner):
 #    sklearn.feature_selection.SelectKBest(, k = 14)
