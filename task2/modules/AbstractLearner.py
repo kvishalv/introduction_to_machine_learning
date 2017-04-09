@@ -22,7 +22,7 @@ class AbstractLearner(object):
         self._train()
 
     @abc.abstractmethod
-    def predict_from(self, features, outputs):
+    def predict_from(self, features):
         raise NotImplementedError
 
     # Calls self.predict_from
