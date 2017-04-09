@@ -1,5 +1,15 @@
 import numpy as np
-from sklearn import *
+from sklearn import (
+# Please don't use import *, it causes a wall of Deprecation Warnings. Thanks!
+    discriminant_analysis,
+    feature_selection,
+    metrics,
+    model_selection,
+    naive_bayes,
+    pipeline,
+    preprocessing
+)
+
 
 from modules.AbstractLearner import SciKitLearner
 from modules import transformers
