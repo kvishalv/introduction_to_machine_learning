@@ -21,9 +21,8 @@ class AbstractLearner(object):
         self._train_outputs = outputs
         self._train()
 
-    @abc.abstractmethod
     def predict_from(self, features):
-        raise NotImplementedError
+        return self._model(features)
 
     # Calls self.predict_from
     def validate_against(self, features, outputs):
