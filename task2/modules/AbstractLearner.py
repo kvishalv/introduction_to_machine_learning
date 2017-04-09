@@ -4,7 +4,7 @@ from sklearn import metrics
 import numpy as np
 
 
-class _AbstractLearner(object):
+class AbstractLearner(object):
 
     __metaclass__ = abc.ABCMeta
 
@@ -45,7 +45,7 @@ class _AbstractLearner(object):
         raise NotImplementedError
 
 
-class SciKitLearner(_AbstractLearner):
+class SciKitLearner(AbstractLearner):
 
     _scale     = None
     _transform = None
