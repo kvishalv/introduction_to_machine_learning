@@ -101,19 +101,21 @@ class QuadraticDiscriminantLearner(SciKitLearner):
         x = self._train_features
         y = self._train_outputs
 
-        """
-        StandardScaler(copy=True, with_mean=True, with_std=True)
-        PolynomialFeatures(degree=2, include_bias=False, interaction_only=True)
-        QuadraticDiscriminantAnalysis(priors=None, reg_param=0.0, store_covariances=False, tol=0.0001)
-        """
+        pipe = pipeline.Pipeline([
+            ('scale', preprocessing.StandardScaler(with_mean=True, with_std=True)),
+            ('expand', preprocessing.PolynomialFeatures(
+                degree=2,
+                interaction_only=True,
+                include_bias=False
+            )),
+            #QuadraticDiscriminantAnalysis(
+            #    priors=None, reg_param=0.0, store_covariances=False, tol=0.0001
+            #)
+            ('estim', discriminant_analysis.QuadraticDiscriminantAnalysis())
+        ])
 
-        self._scale = preprocessing.StandardScaler(with_mean=True, with_std=True)
-        self._transform = preprocessing.PolynomialFeatures(degree=2, include_bias=False, interaction_only=True)
-
-        clf = discriminant_analysis.QuadraticDiscriminantAnalysis()
-        clf.fit(self._transform.fit_transform(self._scale.fit_transform(x), y), y)
-
-        self._model = clf.predict
+        pipe.fit(x, y)
+        self._model = pipe.predict
 
 #class SelectKBest(SciKitLearner):
 #    sklearn.feature_selection.SelectKBest(, k = 14)
