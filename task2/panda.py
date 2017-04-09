@@ -17,7 +17,13 @@ data = pd.read_csv('./data/train.csv', names=NAMES, header=1)
 datax = data.drop('y', axis=1)
 datay = data.drop(NAMES[1:], axis=1)
 
+# Drop correlated data.
+datax = datax.drop(['x8', 'x9', 'x14'], axis=1)
+
 datax.boxplot()
+plt.figure()
+pd.scatter_matrix(datax)
+plt.show()
 
 for n in NAMES[1:]:
     plt.figure()
