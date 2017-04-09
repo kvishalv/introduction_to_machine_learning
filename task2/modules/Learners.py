@@ -68,8 +68,11 @@ class NaiveBayesLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
+            # x14 == x10
+            # x8 == x3
+            # x9 == x6^2 - C
             ('drop', transformers.ColumnDropper(
-                columns=(7, 13)
+                columns=(7, 8, 13)
             )),
             ('scale', preprocessing.StandardScaler()),
             ('expand', preprocessing.PolynomialFeatures(
