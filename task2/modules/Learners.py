@@ -78,18 +78,21 @@ class NaiveBayesLearner(SciKitLearner):
         self._model = pipe.predict
 
 
-class LinearDiscriminantAnalysis(SciKitLearner):
+class LinearDiscriminantLearner(SciKitLearner):
 
     def _train(self):
         x = self._train_features
         y = self._train_outputs
 
-        self._transform = preprocessing.PolynomialFeatures(2)
+        pipe = pipeline.Pipeline([
+            ('expand', preprocessing.PolynomialFeatures(
+                degree=2,
+            )),
+            ('estim', discriminant_analysis.LinearDiscriminantAnalysis())
+        ])
 
-        clf = discriminant_analysis.LinearDiscriminantAnalysis()
-        clf.fit(self._transform.fit_transform(x, y), y)
-
-        self._model = clf.predict
+        pipe.fit(x, y)
+        self._model = pipe.predict
 
 
 class QuadraticDiscriminantLearner(SciKitLearner):
