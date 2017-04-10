@@ -129,6 +129,42 @@ class KNNLearner(AbstractLearner):
         self._model = pipe.predict
 
 
+class NearestCentroidLearner(AbstractLearner):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        pipe = pipeline.Pipeline([
+            # x14 == x10
+            # x8 == x3
+            # x9 == x6^2 - C
+            ('drop', transformers.ColumnDropper(
+                columns=(7, 8, 13)
+            )),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True
+            )),
+            ('expand', preprocessing.PolynomialFeatures(
+                degree=2,
+                interaction_only=True,
+                include_bias=False
+            )),
+            ('select', feature_selection.SelectKBest(
+                k=26,
+                score_func=feature_selection.mutual_info_classif
+            )),
+            ('estim', neighbors.NearestCentroid(
+                metric='euclidean',
+                shrink_threshold=None
+            )),
+        ])
+
+        pipe.fit(x, y)
+        self._model = pipe.predict
+
+
 class LinearDiscriminantLearner(AbstractLearner):
 
     def _train(self):
