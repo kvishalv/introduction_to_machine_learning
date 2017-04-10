@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn import (
 # Please don't use import *, it causes a wall of Deprecation Warnings. Thanks!
+    decomposition,
     discriminant_analysis,
     feature_selection,
     metrics,
@@ -75,12 +76,19 @@ class NaiveBayesLearner(AbstractLearner):
             ('drop', transformers.ColumnDropper(
                 columns=(7, 8, 13)
             )),
-            ('scale', preprocessing.StandardScaler()),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True
+            )),
             ('expand', preprocessing.PolynomialFeatures(
-                degree=2,
+                degree=1,
                 interaction_only=True,
                 include_bias=False
             )),
+            ('reduce', decomposition.FastICA(
+                n_components=10,
+                random_state=1742,
+            ))
             ('select', feature_selection.SelectKBest(
                 score_func=feature_selection.f_classif,
                 k=18
