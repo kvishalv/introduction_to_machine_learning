@@ -23,8 +23,6 @@ class CSVDataSet(object):
     @classmethod
     def from_test_data(cls, filename):
         data = cls._csv_to_array(filename)
-        if SHUFFLE:
-            np.random.shuffle(data)
         test_id = data[:, 0].astype('int')
         test_features = data[:, 1:]
         return cls(test_id, test_features, None)
