@@ -91,7 +91,7 @@ class NaiveBayesLearner(AbstractLearner):
             ))
             ('select', feature_selection.SelectKBest(
                 score_func=feature_selection.f_classif,
-                k=18
+                k=8
             )),
             ('estim', naive_bayes.GaussianNB()),
         ])
