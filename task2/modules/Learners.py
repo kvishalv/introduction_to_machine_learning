@@ -197,16 +197,23 @@ class QuadraticDiscriminantLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            ('scale', preprocessing.StandardScaler(with_mean=True, with_std=True)),
+            ('drop', transformers.ColumnDropper(columns=(7, 8, 13))),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=False # this is not a typo!
+            )),
             ('expand', preprocessing.PolynomialFeatures(
                 degree=2,
-                interaction_only=True,
+                interaction_only=False,
                 include_bias=False
             )),
-            #QuadraticDiscriminantAnalysis(
-            #    priors=None, reg_param=0.0, store_covariances=False, tol=0.0001
-            #)
-            ('estim', discriminant_analysis.QuadraticDiscriminantAnalysis())
+            ('select', feature_selection.SelectKBest(
+                k=45,
+                score_func=feature_selection.mutual_info_classif
+            )),
+            ('estim', discriminant_analysis.QuadraticDiscriminantAnalysis(
+                reg_param=0.022
+            ))
         ])
 
         pipe.fit(x, y)
