@@ -209,10 +209,10 @@ class QuadraticDiscriminantLearner(AbstractLearner):
             )),
             ('select', feature_selection.SelectKBest(
                 k=45,
-                score_func=feature_selection.mutual_info_classif
+                score_func=feature_selection.f_classif
             )),
             ('estim', discriminant_analysis.QuadraticDiscriminantAnalysis(
-                reg_param=0.022
+                reg_param=0.0293
             ))
         ])
 
