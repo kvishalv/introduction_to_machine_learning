@@ -218,6 +218,3 @@ class QuadraticDiscriminantLearner(AbstractLearner):
 
         pipe.fit(x, y)
         self._model = pipe.predict
-
-#class SelectKBest(AbstractLearner):
-#    sklearn.feature_selection.SelectKBest(, k = 14)
