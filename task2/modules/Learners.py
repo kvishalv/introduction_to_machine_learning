@@ -207,12 +207,12 @@ class QuadraticDiscriminantLearner(AbstractLearner):
                 interaction_only=False,
                 include_bias=False
             )),
-            ('select', feature_selection.SelectKBest(
-                k=45,
+            ('select', feature_selection.SelectPercentile(
+                percentile=50,
                 score_func=feature_selection.f_classif
             )),
             ('estim', discriminant_analysis.QuadraticDiscriminantAnalysis(
-                reg_param=0.0293
+                reg_param=0.022
             ))
         ])
 
