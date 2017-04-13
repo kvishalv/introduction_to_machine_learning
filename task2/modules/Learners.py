@@ -70,11 +70,8 @@ class NaiveBayesLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            # x14 == x10
-            # x8 == x3
-            # x9 == x6^2 - C
             ('drop', transformers.ColumnDropper(
-                columns=(7, 8, 13)
+                columns=(7, 8, 11, 12, 13, 14)
             )),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
@@ -82,16 +79,16 @@ class NaiveBayesLearner(AbstractLearner):
             )),
             ('expand', preprocessing.PolynomialFeatures(
                 degree=1,
-                interaction_only=True,
+                interaction_only=False,
                 include_bias=False
             )),
             ('reduce', decomposition.FastICA(
-                n_components=10,
+                fun='cube'
                 random_state=1742,
             ))
             ('select', feature_selection.SelectKBest(
-                score_func=feature_selection.f_classif,
-                k=8
+                k=7
+                score_func=feature_selection.mutual_info_classif,
             )),
             ('estim', naive_bayes.GaussianNB()),
         ])
