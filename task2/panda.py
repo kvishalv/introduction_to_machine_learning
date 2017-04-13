@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from pandas.tools.plotting import scatter_matrix
-from sklearn import decomposition
+from pandas.tools import plotting
+from sklearn import preprocessing
 
 NAMES = [
 'y',
@@ -12,31 +12,62 @@ NAMES = [
 'x10', 'x11', 'x12',
 'x13', 'x14', 'x15'
 ]
+DROPC = ['x8', 'x9', 'x12', 'x13', 'x14', 'x15']
+NNAMES = [n for n in NAMES if n not in DROPC]
 
-data = pd.read_csv('./data/train.csv', names=NAMES, header=1)
-datax = data.drop('y', axis=1)
-datay = data.drop(NAMES[1:], axis=1)
 
-# Drop correlated data.
-datax = datax.drop(['x8', 'x9', 'x14'], axis=1)
-
-datax.boxplot()
-plt.figure()
-pd.scatter_matrix(datax)
-plt.show()
-
-for n in NAMES[1:]:
+def boxplot(data, title=None):
     plt.figure()
-    x = data[n]
-    y = datay
-    plt.scatter(data[n], datay)
-    m,b = np.polyfit(x, y, 1) 
-    plt.plot(x, y, 'yo', x, m*x+b, '--k') 
+    data.boxplot()
+    if title is not None:
+        plt.title(title)
     plt.show()
 
-pca = decomposition.PCA(n_components=15)
-pca.fit(datax)
-print(pca.components_)
-ppp = pd.DataFrame(pca.components_)
-ppp.boxplot()
+
+def scatterplot(data, color=None):
+    pd.scatter_matrix(data, alpha=0.3, diagonal='kde', color=color)
+    plt.show()
+
+
+# 0. Read data
+data = pd.read_csv('./data/train.csv', names=NAMES, header=1)
+palette = {0: "red", 1: "green", 2: "blue"}
+
+# 1. Plot scatter mattrix of all features
+scatterplot(data)
+
+# 2. Show duplicate data
+scatterplot(data[['x3', 'x8', 'x10', 'x14']])
+
+# 2. Show redundant data
+data69 = pd.DataFrame(
+    data=np.column_stack((
+        data[['x6']]**2,
+        data[['x9']]
+    )),
+    columns=('x6^2', 'x9')
+)
+scatterplot(data69)
+
+# 3. Show noise data
+scatterplot(
+    data[['y', 'x12', 'x13', 'x15']],
+    color=tuple(palette[c] for c in data.y)
+)
+
+# 4. Filter useful columns.
+ddata = data.drop(DROPC, axis=1)
+ddatax = ddata.drop(['y'], axis=1)
+ddatay = ddata.y
+
+# 5. Show box-n-whisker plot
+boxplot(ddatax, 'Unscaled features')
+
+# 6. Plot feature summarizers
+plotting.radviz(ddata, 'y')
+plt.title('RadViz')
+plt.show()
+
+plotting.parallel_coordinates(ddata, 'y')
+plt.title('Parallel coordinates')
 plt.show()
