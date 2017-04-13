@@ -107,23 +107,20 @@ class KNNLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            # x14 == x10
-            # x8 == x3
-            # x9 == x6^2 - C
             ('drop', transformers.ColumnDropper(
-                columns=(7, 8, 13)
+                columns=(7, 8, 11, 12, 13, 14)
             )),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
                 with_std=True
             )),
             ('expand', preprocessing.PolynomialFeatures(
-                degree=2,
+                degree=1,
                 interaction_only=False,
                 include_bias=False
             )),
             ('select', feature_selection.SelectKBest(
-                k=9,
+                k=8,
                 score_func=feature_selection.f_classif
             )),
             ('estim', neighbors.KNeighborsClassifier(
