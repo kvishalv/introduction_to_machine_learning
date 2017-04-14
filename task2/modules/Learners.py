@@ -255,7 +255,9 @@ class QuadraticDiscriminantLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            ('drop', transformers.ColumnDropper(columns=(7, 8, 13))),
+            ('drop', transformers.ColumnDropper(
+                columns=(6, 7, 8, 11, 12, 13, 14))
+            ),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
                 with_std=False # this is not a typo!
@@ -266,11 +268,11 @@ class QuadraticDiscriminantLearner(AbstractLearner):
                 include_bias=False
             )),
             ('select', feature_selection.SelectPercentile(
-                percentile=50,
+                percentile=98,
                 score_func=feature_selection.f_classif
             )),
             ('estim', discriminant_analysis.QuadraticDiscriminantAnalysis(
-                reg_param=0.022
+                reg_param=0.0043
             ))
         ])
 
