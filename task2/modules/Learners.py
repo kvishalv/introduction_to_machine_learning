@@ -147,11 +147,11 @@ class NaiveBayesLearner(AbstractLearner):
                 include_bias=False
             )),
             ('reduce', decomposition.FastICA(
-                fun='cube'
+                fun='cube',
                 random_state=1742,
-            ))
+            )),
             ('select', feature_selection.SelectKBest(
-                k=7
+                k=7,
                 score_func=feature_selection.mutual_info_classif,
             )),
             ('estim', naive_bayes.GaussianNB()),
