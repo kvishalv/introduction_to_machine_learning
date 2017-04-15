@@ -12,7 +12,8 @@ from sklearn import (
     naive_bayes,
     neighbors,
     pipeline,
-    preprocessing
+    preprocessing,
+    svm
 )
 
 
@@ -125,6 +126,34 @@ class VotingLearner(AbstractLearner):
         print("CV Score:", grid.best_score_)
 
         self._model = grid.predict
+
+
+class NuSVCLearner(AbstractLearner):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        pipe = pipeline.Pipeline([
+            ('drop', transformers.ColumnDropper(
+                columns=(6, 7, 8, 11, 12, 13, 14)
+            )),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True
+            )),
+            ('estim', svm.NuSVC(
+                nu=0.19,
+                kernel='rbf',
+                gamma='auto',
+                shrinking=True,
+                class_weight='balanced',
+                random_state=1742
+            )),
+        ])
+
+        pipe.fit(x, y)
+        self._model = pipe.predict
 
 
 class NaiveBayesLearner(AbstractLearner):
