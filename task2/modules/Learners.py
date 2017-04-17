@@ -1,8 +1,11 @@
+import itertools
+
 import numpy as np
+
 from sklearn import (
-# Please don't use import *, it causes a wall of Deprecation Warnings. Thanks!
     decomposition,
     discriminant_analysis,
+    ensemble,
     feature_selection,
     metrics,
     model_selection,
@@ -13,7 +16,8 @@ from sklearn import (
     linear_model,
     svm,
     ensemble,
-    tree
+    tree,
+    svm
 )
 
 
@@ -66,6 +70,95 @@ class GridLearner(AbstractLearner):
         self._model = grid.predict
 
 
+class VotingLearner(AbstractLearner):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        pipe = pipeline.Pipeline([
+            ('drop', transformers.ColumnDropper(columns=(7, 8, 13))),
+            ('estim', ensemble.VotingClassifier(
+                estimators=[
+                    ('knn', pipeline.Pipeline([
+                        ('scale', preprocessing.StandardScaler(with_mean=True, with_std=True)),
+                        ('expand', preprocessing.PolynomialFeatures(degree=2, interaction_only=False, include_bias=False)),
+                        ('select', feature_selection.SelectPercentile(score_func=feature_selection.f_classif)),
+                        ('estim', neighbors.KNeighborsClassifier())
+                    ])),
+                    ('qda', pipeline.Pipeline([
+                        ('scale', preprocessing.StandardScaler(with_mean=True, with_std=False)),
+                        ('expand', preprocessing.PolynomialFeatures(degree=2, interaction_only=False, include_bias=False)),
+                        ('select', feature_selection.SelectPercentile(score_func=feature_selection.f_classif)),
+                        ('estim', discriminant_analysis.QuadraticDiscriminantAnalysis())
+                    ]))
+            ]))
+        ])
+
+        param_grid = [{
+            'estim__knn__select__percentile': [i for i in range(5, 8)],
+            'estim__knn__estim__n_neighbors': [i for i in range(2, 7)],
+            #'estim__knn__estim__weights': ['distance', 'uniform'],
+            'estim__knn__estim__weights': ['distance'],
+            'estim__knn__estim__metric': ['euclidean', 'manhattan', 'chebyshev'],
+            #'estim__knn__estim__metric': ['chebyshev'],
+
+            'estim__qda__select__percentile': [i for i in range(41, 51)],
+            'estim__qda__estim__reg_param': [0.02 + 0.001 for i in range(-5, 6)],
+
+            'estim__voting': ['soft'],
+            'estim__weights': list(itertools.product(range(1, 2), range(1, 3)))
+        }]
+
+        grid = model_selection.GridSearchCV(
+            pipe, cv=10, n_jobs=4, param_grid=param_grid, verbose=1,
+            scoring = metrics.make_scorer(metrics.accuracy_score),
+        )
+        grid.fit(x, y)
+
+        print('Optimal Hyperparametres:')
+        print('=======================')
+        for name, step in grid.best_estimator_.steps:
+            if name == 'estim':
+                for (name2, _), estim2 in zip(step.estimators, step.estimators_):
+                    print('  ', name2)
+                    for name3, step3 in estim2.steps:
+                        print('    ', step3)
+                print('Weights:', step.voting, step.weights)
+            else:
+                print(step)
+        print("CV Score:", grid.best_score_)
+
+        self._model = grid.predict
+
+
+class NuSVCLearner(AbstractLearner):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        pipe = pipeline.Pipeline([
+            ('drop', transformers.ColumnDropper(
+                columns=(6, 7, 8, 11, 12, 13, 14)
+            )),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True
+            )),
+            ('estim', svm.NuSVC(
+                nu=0.19,
+                kernel='rbf',
+                gamma='auto',
+                shrinking=True,
+                class_weight='balanced',
+                random_state=1742
+            )),
+        ])
+
+        pipe.fit(x, y)
+        self._model = pipe.predict
+
 
 class NaiveBayesLearner(AbstractLearner):
 
@@ -74,11 +167,8 @@ class NaiveBayesLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            # x14 == x10
-            # x8 == x3
-            # x9 == x6^2 - C
             ('drop', transformers.ColumnDropper(
-                columns=(7, 8, 13)
+                columns=(7, 8, 11, 12, 13, 14)
             )),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
@@ -86,16 +176,16 @@ class NaiveBayesLearner(AbstractLearner):
             )),
             ('expand', preprocessing.PolynomialFeatures(
                 degree=1,
-                interaction_only=True,
+                interaction_only=False,
                 include_bias=False
             )),
             ('reduce', decomposition.FastICA(
-                n_components=10,
+                fun='cube',
                 random_state=1742,
-            ))
+            )),
             ('select', feature_selection.SelectKBest(
-                score_func=feature_selection.f_classif,
-                k=8
+                k=7,
+                score_func=feature_selection.mutual_info_classif,
             )),
             ('estim', naive_bayes.GaussianNB()),
         ])
@@ -111,23 +201,20 @@ class KNNLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            # x14 == x10
-            # x8 == x3
-            # x9 == x6^2 - C
             ('drop', transformers.ColumnDropper(
-                columns=(7, 8, 13)
+                columns=(7, 8, 11, 12, 13, 14)
             )),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
                 with_std=True
             )),
             ('expand', preprocessing.PolynomialFeatures(
-                degree=2,
+                degree=1,
                 interaction_only=False,
                 include_bias=False
             )),
             ('select', feature_selection.SelectKBest(
-                k=9,
+                k=8,
                 score_func=feature_selection.f_classif
             )),
             ('estim', neighbors.KNeighborsClassifier(
@@ -202,7 +289,9 @@ class QuadraticDiscriminantLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            ('drop', transformers.ColumnDropper(columns=(7, 8, 13))),
+            ('drop', transformers.ColumnDropper(
+                columns=(6, 7, 8, 11, 12, 13, 14))
+            ),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
                 with_std=False # this is not a typo!
@@ -215,12 +304,12 @@ class QuadraticDiscriminantLearner(AbstractLearner):
                 interaction_only=False,
                 include_bias=False
             )),
-            ('select', feature_selection.SelectKBest(
-                k=45,
-                score_func=feature_selection.mutual_info_classif
+            ('select', feature_selection.SelectPercentile(
+                percentile=98,
+                score_func=feature_selection.f_classif
             )),
             ('estim', discriminant_analysis.QuadraticDiscriminantAnalysis(
-                reg_param=0.022
+                reg_param=0.0043
             ))
         ])
 

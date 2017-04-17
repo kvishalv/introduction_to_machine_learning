@@ -12,7 +12,7 @@ warnings.simplefilter("ignore")
 OUTPUT     = True
 VALIDATE   = True
 
-MULTIPLEVALIDATE = True
+MULTIPLEVALIDATE = False
 PRINTSTEPS    = False #if MULTIPLEVALIDATE
 NRVALIDATIONS = 20    #if MULTIPLEVALIDATE
 
