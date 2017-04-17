@@ -459,14 +459,16 @@ class HierarchicalLearner(AbstractLearner):
         x = self._train_features
         y = self._train_outputs
 
-        print(x.shape)
-        print(y.T.shape)
+        ywith02 = np.copy(y)
+        ywith02[np.where(y==1)] = 0
 
-        #xy = np.concatenate((x, y.T), axis=0)
-        #print(y[0:10,])
+        ywith01 = np.copy(y)
+        ywith01 = np.delete(ywith01, np.where(y==2), axis=0)
+        xwith01 = np.copy(y)
+        xwith01 = np.delete(xwith01, np.where(y==2), axis=0)
 
-
-        pipe = pipeline.Pipeline([
+        #First classifier to take out 2
+        pipe1 = pipeline.Pipeline([
             ('drop', transformers.ColumnDropper(columns=(6, 7, 8, 11, 12, 13, 14))),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
@@ -481,10 +483,48 @@ class HierarchicalLearner(AbstractLearner):
                 k=25,
                 score_func=feature_selection.mutual_info_classif
             )),
-            ('estim', tree.DecisionTreeClassifier(
+            ('estim', discriminant_analysis.QuadraticDiscriminantAnalysis(
+                reg_param=0.0043
             ))
-            #svm.SVC, svm.NuSVC, svm.LinearSVC
         ])
 
-        pipe.fit(x, y)
-        self._model = pipe.predict
+        #fit all values assuming y=1 is same as y=0
+        pipe1.fit(x, ywith02)
+        self._classifier1 = pipe1.predict
+
+
+        pipe2 = pipeline.Pipeline([
+            ('drop', transformers.ColumnDropper(columns=(6, 7, 8, 11, 12, 13, 14))),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True # this is not a typo!
+            )),
+            ('expand', preprocessing.PolynomialFeatures(
+                degree=2,
+                interaction_only=False,
+                include_bias=False
+            )),
+            ('select', feature_selection.SelectKBest(
+                k=25,
+                score_func=feature_selection.mutual_info_classif
+            )),
+            ('estim', discriminant_analysis.QuadraticDiscriminantAnalysis(
+                reg_param=0.0043
+            ))
+        ])
+
+        pipe2.fit(xwith01, ywith01)
+        self._classifier2 = pipe2.predict
+
+        self._model = self._predict
+
+    def _predict(self): #this is supposed to wrap up the result of two classifiers and return the final class prediction
+        #return a result depending on self._classifier1, self._classifier2
+
+        NotImplementedError
+
+    def _classifier1(self):
+        NotImplementedError
+
+    def _classifier2(self):
+        NotImplementedError
