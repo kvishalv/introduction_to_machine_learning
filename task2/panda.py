@@ -85,7 +85,6 @@ def main():
     for yclass in range(3):
         ddatac = ddata[(ddata.y != yclass)]
         yscatterplot(ddatac, title='Not class %d' % yclass)
-    """
 
     # 11. Plot 3D scatters for all classes, 3 columns per time.
     for x, y, z in itertools.combinations(NNAMES[1:], r=3):
