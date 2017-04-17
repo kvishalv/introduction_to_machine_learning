@@ -47,6 +47,11 @@ class CSVDataSet(object):
             delimiter=",", fmt="%i,%r"
         )
 
+    def shuffle(self):
+        np.random.shuffle(self.ids)
+        np.random.shuffle(self.features)
+        np.random.shuffle(self.outputs)
+
     def printOverview(self):
 
         np.set_printoptions(threshold=np.nan)

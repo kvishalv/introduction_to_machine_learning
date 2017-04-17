@@ -9,7 +9,11 @@ from sklearn import (
     naive_bayes,
     neighbors,
     pipeline,
-    preprocessing
+    preprocessing,
+    linear_model,
+    svm,
+    ensemble,
+    tree
 )
 
 
@@ -190,6 +194,7 @@ class LinearDiscriminantLearner(AbstractLearner):
         self._model = pipe.predict
 
 
+
 class QuadraticDiscriminantLearner(AbstractLearner):
 
     def _train(self):
@@ -202,6 +207,9 @@ class QuadraticDiscriminantLearner(AbstractLearner):
                 with_mean=True,
                 with_std=False # this is not a typo!
             )),
+            #('scale', preprocessing.RobustScaler(
+            #    with_centering=True, with_scaling=False, quantile_range=(1.0, 99.0)
+            #)),
             ('expand', preprocessing.PolynomialFeatures(
                 degree=2,
                 interaction_only=False,
@@ -219,5 +227,123 @@ class QuadraticDiscriminantLearner(AbstractLearner):
         pipe.fit(x, y)
         self._model = pipe.predict
 
-#class SelectKBest(AbstractLearner):
-#    sklearn.feature_selection.SelectKBest(, k = 14)
+
+
+class StochasticGradientLearner(AbstractLearner):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        pipe = pipeline.Pipeline([
+            ('drop', transformers.ColumnDropper(columns=(7, 8, 13))),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True # this is not a typo!
+            )),
+            ('expand', preprocessing.PolynomialFeatures(
+                degree=2,
+                interaction_only=False,
+                include_bias=False
+            )),
+            ('select', feature_selection.SelectKBest(
+                k=85,
+                score_func=feature_selection.mutual_info_classif
+            )),
+            ('estim', linear_model.SGDClassifier(alpha=0.001
+            ))
+        ])
+
+        pipe.fit(x, y)
+        self._model = pipe.predict
+
+
+
+class SVMLearner(AbstractLearner):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        pipe = pipeline.Pipeline([
+            ('drop', transformers.ColumnDropper(columns=(7, 8, 13))),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True # this is not a typo!
+            )),
+            ('expand', preprocessing.PolynomialFeatures(
+                degree=2,
+                interaction_only=False,
+                include_bias=False
+            )),
+            ('select', feature_selection.SelectKBest(
+                k=45,
+                score_func=feature_selection.mutual_info_classif
+            )),
+            ('estim', svm.LinearSVC(C=10
+            ))
+            #svm.SVC, svm.NuSVC, svm.LinearSVC
+        ])
+
+        pipe.fit(x, y)
+        self._model = pipe.predict
+
+
+class GradientBoostingLearner(AbstractLearner):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        pipe = pipeline.Pipeline([
+            ('drop', transformers.ColumnDropper(columns=(7, 8, 13))),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True # this is not a typo!
+            )),
+            ('expand', preprocessing.PolynomialFeatures(
+                degree=2,
+                interaction_only=False,
+                include_bias=False
+            )),
+            ('select', feature_selection.SelectKBest(
+                k=45,
+                score_func=feature_selection.mutual_info_classif
+            )),
+            ('estim', ensemble.GradientBoostingClassifier(learning_rate=0.1, max_depth=2
+            ))
+            #svm.SVC, svm.NuSVC, svm.LinearSVC
+        ])
+
+        pipe.fit(x, y)
+        self._model = pipe.predict
+
+
+class DecisionTreeLearner(AbstractLearner):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        pipe = pipeline.Pipeline([
+            ('drop', transformers.ColumnDropper(columns=(7, 8, 13))),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True # this is not a typo!
+            )),
+            ('expand', preprocessing.PolynomialFeatures(
+                degree=2,
+                interaction_only=False,
+                include_bias=False
+            )),
+            ('select', feature_selection.SelectKBest(
+                k=45,
+                score_func=feature_selection.mutual_info_classif
+            )),
+            ('estim', tree.DecisionTreeClassifier(
+            ))
+            #svm.SVC, svm.NuSVC, svm.LinearSVC
+        ])
+
+        pipe.fit(x, y)
+        self._model = pipe.predict
