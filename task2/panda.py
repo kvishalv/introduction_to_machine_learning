@@ -9,7 +9,6 @@ from scipy import stats
 from sklearn import preprocessing
 
 
-
 NAMES = ['y', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9',
               'x10', 'x11', 'x12', 'x13', 'x14', 'x15' ]
 DROPC = ['x7', 'x8', 'x9', 'x12', 'x13', 'x14', 'x15']
@@ -23,6 +22,7 @@ PALETTE = {0: "red", 1: "green", 2: "blue"}
 ddata = data.drop(DROPC, axis=1)
 ddatax = ddata.drop(['y'], axis=1)
 ddatay = ddata.y
+
 
 def main():
     # 2. Plot scatter mattrix of all features
@@ -85,6 +85,14 @@ def main():
     for yclass in range(3):
         ddatac = ddata[(ddata.y != yclass)]
         yscatterplot(ddatac, title='Not class %d' % yclass)
+    """
+
+    # 11. Plot 3D scatters for all classes, 3 columns per time.
+    for x, y, z in itertools.combinations(NNAMES[1:], r=3):
+        h = plt.figure().gca(projection='3d')
+        h.scatter(ddata[x], ddata[y], ddata[z], color=[PALETTE[c] for c in ddata.y])
+        h.set_xlabel(x); h.set_ylabel(y); h.set_zlabel(z)
+        plt.show()
 
 
 def boxplot(data, title=None):
