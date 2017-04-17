@@ -32,7 +32,7 @@ class GridLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            #('drop', transformers.ColumnDropper(columns=(7, 13))),
+            ('drop', transformers.ColumnDropper(columns=(6, 7, 8, 11, 12, 13, 14))),
             #('select', feature_selection.SelectKBest()),
             ('scale', preprocessing.StandardScaler()),
             ('expand', preprocessing.PolynomialFeatures()),
@@ -140,7 +140,7 @@ class NuSVCLearner(AbstractLearner):
 
         pipe = pipeline.Pipeline([
             ('drop', transformers.ColumnDropper(
-                columns=(6, 7, 8, 11, 12, 13, 14)
+                columns=(7, 8, 11, 12, 13, 14)
             )),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
@@ -239,7 +239,7 @@ class NearestCentroidLearner(AbstractLearner):
             # x8 == x3
             # x9 == x6^2 - C
             ('drop', transformers.ColumnDropper(
-                columns=(7, 8, 13)
+                columns=(7, 8, 11, 12, 13, 14)
             )),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
@@ -325,7 +325,7 @@ class StochasticGradientLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            ('drop', transformers.ColumnDropper(columns=(7, 8, 13))),
+            ('drop', transformers.ColumnDropper(columns=(6, 7, 8, 11, 12, 13, 14))),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
                 with_std=True # this is not a typo!
@@ -336,7 +336,7 @@ class StochasticGradientLearner(AbstractLearner):
                 include_bias=False
             )),
             ('select', feature_selection.SelectKBest(
-                k=85,
+                k=25,
                 score_func=feature_selection.mutual_info_classif
             )),
             ('estim', linear_model.SGDClassifier(alpha=0.001
@@ -355,7 +355,7 @@ class SVMLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            ('drop', transformers.ColumnDropper(columns=(7, 8, 13))),
+            ('drop', transformers.ColumnDropper(columns=(6, 7, 8, 11, 12, 13, 14))),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
                 with_std=True # this is not a typo!
@@ -366,7 +366,7 @@ class SVMLearner(AbstractLearner):
                 include_bias=False
             )),
             ('select', feature_selection.SelectKBest(
-                k=45,
+                k=25,
                 score_func=feature_selection.mutual_info_classif
             )),
             ('estim', svm.LinearSVC(C=10
@@ -385,7 +385,7 @@ class GradientBoostingLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            ('drop', transformers.ColumnDropper(columns=(7, 8, 13))),
+            ('drop', transformers.ColumnDropper(columns=(6, 7, 8, 11, 12, 13, 14))),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
                 with_std=True # this is not a typo!
@@ -396,7 +396,7 @@ class GradientBoostingLearner(AbstractLearner):
                 include_bias=False
             )),
             ('select', feature_selection.SelectKBest(
-                k=45,
+                k=25,
                 score_func=feature_selection.mutual_info_classif
             )),
             ('estim', ensemble.GradientBoostingClassifier(learning_rate=0.1, max_depth=2
@@ -415,7 +415,7 @@ class DecisionTreeLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            ('drop', transformers.ColumnDropper(columns=(7, 8, 13))),
+            ('drop', transformers.ColumnDropper(columns=(6, 7, 8, 11, 12, 13, 14))),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
                 with_std=True # this is not a typo!
@@ -426,7 +426,46 @@ class DecisionTreeLearner(AbstractLearner):
                 include_bias=False
             )),
             ('select', feature_selection.SelectKBest(
-                k=45,
+                k=25,
+                score_func=feature_selection.mutual_info_classif
+            )),
+            ('estim', tree.DecisionTreeClassifier(
+            ))
+            #svm.SVC, svm.NuSVC, svm.LinearSVC
+        ])
+
+        pipe.fit(x, y)
+        self._model = pipe.predict
+
+
+class HierarchicalLearner(AbstractLearner):
+
+    def _train(self):
+
+        #Train to distinguish 2 first!
+        x = self._train_features
+        y = self._train_outputs
+
+        print(x.shape)
+        print(y.T.shape)
+
+        #xy = np.concatenate((x, y.T), axis=0)
+        #print(y[0:10,])
+
+
+        pipe = pipeline.Pipeline([
+            ('drop', transformers.ColumnDropper(columns=(6, 7, 8, 11, 12, 13, 14))),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True # this is not a typo!
+            )),
+            ('expand', preprocessing.PolynomialFeatures(
+                degree=2,
+                interaction_only=False,
+                include_bias=False
+            )),
+            ('select', feature_selection.SelectKBest(
+                k=25,
                 score_func=feature_selection.mutual_info_classif
             )),
             ('estim', tree.DecisionTreeClassifier(

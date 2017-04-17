@@ -13,21 +13,13 @@ OUTPUT     = True
 VALIDATE   = True
 
 MULTIPLEVALIDATE = False
-PRINTSTEPS    = False #if MULTIPLEVALIDATE
+PRINTSTEPS       = False #if MULTIPLEVALIDATE
 NRVALIDATIONS = 20    #if MULTIPLEVALIDATE
 
 learner = QuadraticDiscriminantLearner()
 #learner = GridLearner()
 
-
-
-""" To Do:
-
-Try Removing outliers
-Try robustScaler
-
-"""
-
+learner = HierarchicalLearner()
 
 def main():
 
