@@ -5,6 +5,7 @@ from sklearn import (
 # Please don't use import *, it causes a wall of Deprecation Warnings. Thanks!
     decomposition,
     discriminant_analysis,
+    dummy,
     ensemble,
     feature_selection,
     metrics,
@@ -73,13 +74,13 @@ class VotingLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            ('drop', transformers.ColumnDropper(columns=(7, 8, 13))),
+            ('drop', transformers.ColumnDropper(columns=(6, 7, 8, 11, 12, 13, 14))),
             ('estim', ensemble.VotingClassifier(
                 estimators=[
                     ('knn', pipeline.Pipeline([
                         ('scale', preprocessing.StandardScaler(with_mean=True, with_std=True)),
-                        ('expand', preprocessing.PolynomialFeatures(degree=2, interaction_only=False, include_bias=False)),
-                        ('select', feature_selection.SelectPercentile(score_func=feature_selection.f_classif)),
+                        ('expand', preprocessing.PolynomialFeatures(degree=1, interaction_only=False, include_bias=False)),
+                        #('select', feature_selection.SelectPercentile(score_func=feature_selection.f_classif)),
                         ('estim', neighbors.KNeighborsClassifier())
                     ])),
                     ('qda', pipeline.Pipeline([
@@ -87,27 +88,39 @@ class VotingLearner(AbstractLearner):
                         ('expand', preprocessing.PolynomialFeatures(degree=2, interaction_only=False, include_bias=False)),
                         ('select', feature_selection.SelectPercentile(score_func=feature_selection.f_classif)),
                         ('estim', discriminant_analysis.QuadraticDiscriminantAnalysis())
-                    ]))
-            ]))
+                    ])),
+                    ('dummy', pipeline.Pipeline([
+                        ('estim', dummy.DummyClassifier()),
+                    ])),
+                ]
+            ))
         ])
 
         param_grid = [{
-            'estim__knn__select__percentile': [i for i in range(5, 8)],
-            'estim__knn__estim__n_neighbors': [i for i in range(2, 7)],
-            #'estim__knn__estim__weights': ['distance', 'uniform'],
+            #'estim__knn__select__percentile': [i for i in range(5, 8)],
+            'estim__knn__estim__n_neighbors': [i for i in range(5, 6)],
             'estim__knn__estim__weights': ['distance'],
-            'estim__knn__estim__metric': ['euclidean', 'manhattan', 'chebyshev'],
-            #'estim__knn__estim__metric': ['chebyshev'],
+            #'estim__knn__estim__metric': ['manhattan', 'euclidean', 'chebyshev'],
+            'estim__knn__estim__metric': ['euclidean'],
 
-            'estim__qda__select__percentile': [i for i in range(41, 51)],
-            'estim__qda__estim__reg_param': [0.02 + 0.001 for i in range(-5, 6)],
+            'estim__qda__select__percentile': [i for i in range(94, 95)],
+            #'estim__qda__estim__reg_param': [0.052 + 0.001 * i for i in range(-5, 6)],
+            'estim__qda__estim__reg_param': [0.052],
+
+            'estim__dummy__estim__strategy': ['most_frequent'],
+            'estim__dummy__estim__random_state': [1742],
 
             'estim__voting': ['soft'],
-            'estim__weights': list(itertools.product(range(1, 2), range(1, 3)))
+            'estim__weights': [[8, 8, 5]]
+            #'estim__weights': list(itertools.product(
+            #    [7.2 + 0.05 * i for i in range(-5, 6)],
+            #    [7.2 + 0.05 * i for i in range(-5, 6)],
+            #    [4.5 + 0.05 * i for i in range(-5, 6)]
+            #))
         }]
 
         grid = model_selection.GridSearchCV(
-            pipe, cv=10, n_jobs=4, param_grid=param_grid, verbose=1,
+            pipe, cv=20, n_jobs=4, param_grid=param_grid, verbose=1,
             scoring = metrics.make_scorer(metrics.accuracy_score),
         )
         grid.fit(x, y)
