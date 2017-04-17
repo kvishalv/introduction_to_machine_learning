@@ -453,22 +453,24 @@ class DecisionTreeLearner(AbstractLearner):
 
 class HierarchicalLearner(AbstractLearner):
 
+    _classifier1 = None
+    _classifier2 = None
+
+
     def _train(self):
 
         #Train to distinguish 2 first!
         x = self._train_features
         y = self._train_outputs
 
-        ywith02 = np.copy(y)
-        ywith02[np.where(y==1)] = 0
+        ywith02 = y.copy()
+        ywith02[ywith02 == 1] = 0
 
-        ywith01 = np.copy(y)
-        ywith01 = np.delete(ywith01, np.where(y==2), axis=0)
-        xwith01 = np.copy(y)
-        xwith01 = np.delete(xwith01, np.where(y==2), axis=0)
+        ywith01 = y[y < 2]
+        xwith01 = x[y < 2]
 
         #First classifier to take out 2
-        pipe1 = pipeline.Pipeline([
+        self._classifier1 = pipeline.Pipeline([
             ('drop', transformers.ColumnDropper(columns=(6, 7, 8, 11, 12, 13, 14))),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
@@ -489,11 +491,10 @@ class HierarchicalLearner(AbstractLearner):
         ])
 
         #fit all values assuming y=1 is same as y=0
-        pipe1.fit(x, ywith02)
-        self._classifier1 = pipe1.predict
+        self._classifier1.fit(x, ywith02)
 
 
-        pipe2 = pipeline.Pipeline([
+        self._classifier2 = pipeline.Pipeline([
             ('drop', transformers.ColumnDropper(columns=(6, 7, 8, 11, 12, 13, 14))),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
@@ -513,18 +514,21 @@ class HierarchicalLearner(AbstractLearner):
             ))
         ])
 
-        pipe2.fit(xwith01, ywith01)
-        self._classifier2 = pipe2.predict
+        self._classifier2.fit(xwith01, ywith01)
 
-        self._model = self._predict
+        self._model = self._hierarchical_model
 
-    def _predict(self): #this is supposed to wrap up the result of two classifiers and return the final class prediction
-        #return a result depending on self._classifier1, self._classifier2
+    def _hierarchical_model(self, features):
+        """
+        Wrap up the result of two classifiers and return the final prediction
 
-        NotImplementedError
+        Returns a result depending on self._classifier1, self._classifier2
+        """
+        y_02 = self._classifier1.predict(features)
 
-    def _classifier1(self):
-        NotImplementedError
+        reclassify_idxs = y_02 == 0
 
-    def _classifier2(self):
-        NotImplementedError
+        y_01 = self._classifier2.predict(features[reclassify_idxs])
+        y_02[reclassify_idxs] = y_01
+
+        return y_02
