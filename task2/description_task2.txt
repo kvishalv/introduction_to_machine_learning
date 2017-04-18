@@ -1,12 +1,36 @@
-Description task 1
-First, we tried a number of different approaches including
+Description task 2
 
-Methods:
+Approaches tried: 
+- NuSVC, NaiveBayes, KNN, Nearest Centroid, Linear Discriminant, Quadratic Discriminant, Stochastic Discriminant, SVM, Stochastic Gradient, Gradient Boosting, Decision Tree. 
+=> KNN and Quadratic Discriminant were promising
 
 Data Pre-Processing:
+- Scaling and removing outliers. 
+
+=> removing outliers did not offer significant improvement
+=> scaling for mean did
+
+- Removing redundancy. 
+=> x9 correlates with x6^2
+=> x8 with x3
+=> x14 with x10
+=> x12, x13 and x15 seem to be noise
+=> Removing them improved the result
 
 Optimizing Parameters:
+- GridSearchCV as in previous task, which improved the result slightly. 
+
+Methods:
+- hierarchical structure
+=> Did not improve our result. 
+
+- Voting approach using KNN & Quadratic Discriminant
+=> improved a bit 
 
 Cross Validation:
+- Manual bootstrapping
+- Automatic using GridSearchCV with 10 fold cross validation
+=> No apparent overfitting
 
-Summary:
+Summary: Voting classifier with KNN and Quadratic Discriminant.
+
