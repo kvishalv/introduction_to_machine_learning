@@ -495,7 +495,7 @@ class HierarchicalLearner(AbstractLearner):
 
 
         self._classifier2 = pipeline.Pipeline([
-            ('drop', transformers.ColumnDropper(columns=(6, 7, 8, 11, 12, 13, 14))),
+            ('drop', transformers.ColumnDropper(columns=(8, 9, 12, 13, 14, 15))),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
                 with_std=True # this is not a typo!

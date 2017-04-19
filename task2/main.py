@@ -16,7 +16,7 @@ MULTIPLEVALIDATE = False
 PRINTSTEPS       = False #if MULTIPLEVALIDATE
 NRVALIDATIONS = 20    #if MULTIPLEVALIDATE
 
-learner = QuadraticDiscriminantLearner()
+#learner = QuadraticDiscriminantLearner()
 #learner = GridLearner()
 
 learner = HierarchicalLearner()
