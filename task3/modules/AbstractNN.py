@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import abc
 from sklearn import metrics
+import numpy as np
 
 class AbstractNN(object):
 
@@ -30,7 +31,11 @@ class AbstractNN(object):
     # Calls self.predict_from
     def train_error(self):
         predictions = self.predict_from(self._train_features)
-        return self.accuracy(predictions, self._train_outputs)
+        y_est = [np.argmax(x) for x in predictions]           # To revert the categorial labels to multiclass labels
+        y_true = [np.argmax(x) for x in self._train_outputs]
+
+        # TODO ValueError: Can't handle mix of continuous-multioutput and multilabel-indicator
+        return self.accuracy(y_est, y_true)
 
     @staticmethod
     def accuracy(predictions, true_values):

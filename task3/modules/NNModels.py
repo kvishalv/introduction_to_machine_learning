@@ -22,17 +22,15 @@ class BaselineModel(AbstractNN):
         y = self._train_outputs
 
         model = Sequential()
-        model.add(Dense(32, input_dim=x.shape[1], activation='relu'))
-        model.add(Dense(16, activation='relu'))
-        model.add(Dense(1, activation='sigmoid'))
 
-        model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
+        model.add(Dense(64, activation='relu', input_dim=100))
+        model.add(Dense(64, activation='relu'))
+        model.add(Dense(5, activation='softmax'))
+        model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
         history = History()
 
         model.fit(x, y, epochs=15, batch_size=100, callbacks=[history])
 
-        scores = model.evaluate(x, y)
-        predictions = model.predict(X_test)
-        rounded = [np.argmax(x) for x in predictions]
-        self._model =
+        # scores = model.evaluate(x, y)
+        self._model = model.predict
 

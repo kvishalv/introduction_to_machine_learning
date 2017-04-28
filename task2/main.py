@@ -31,7 +31,7 @@ def main():
     tacc = np.zeros(nrval)
     vacc = np.zeros(nrval)
 
-    for i in range (0,nrval):
+    for i in range(0, nrval):
         print(i+1, "of", nrval)
         train_set = CSVDataSet.from_train_data('data/train.csv')
         x_train, y_train = train_set.features, train_set.outputs
