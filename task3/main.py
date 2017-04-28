@@ -22,16 +22,13 @@ def main():
             stratify=y_train,
             random_state=42
         )
-        y_train_cat = to_categorical(y_train, num_classes=5)
-        y_val_cat = to_categorical(y_val, num_classes=5)
 
-
-    learner.learn_from(x_train, y_train_cat)
+    learner.learn_from(x_train, y_train)
 
     print("Training error for", learner.__class__.__name__, "is:", learner.train_error)
 
     if VALIDATE:
-        verror = learner.validate_against(x_val, y_val_cat)
+        verror = learner.validate_against(x_val, y_val)
         print("Validation error for", learner.__class__.__name__, "is:", verror)
         print("Validation error - training error:", learner.__class__.__name__, "is:", verror - learner.train_error)
 

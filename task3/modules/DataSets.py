@@ -16,9 +16,9 @@ class DataSets(object):
         data = cls._hdf_to_array(filename, "train")
         train_id = data.index.values
         train_y = data['y'].as_matrix()
-        # train_y_cat = to_categorical(train_y, num_classes=5)        # Converts a class vector to binary class matrix
+        train_y_cat = to_categorical(train_y, num_classes=5)        # Converts a class vector to binary class matrix
         train_features = data.ix[:, 1:].astype(float).as_matrix()
-        return cls(train_id, train_features, train_y)
+        return cls(train_id, train_features, train_y_cat)
 
     @classmethod
     def from_test_data(cls, filename):
