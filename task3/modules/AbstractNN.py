@@ -43,7 +43,6 @@ class AbstractNN(object):
         y_est = [np.argmax(x) for x in predictions]           # To revert the categorial labels to multiclass labels
         y_true = [np.argmax(x) for x in self._train_outputs]
 
-        # TODO ValueError: Can't handle mix of continuous-multioutput and multilabel-indicator
         return self.accuracy(y_est, y_true)
 
     @staticmethod
