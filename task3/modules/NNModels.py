@@ -12,6 +12,7 @@ from keras.callbacks import History, Callback
 from sklearn import model_selection
 from sklearn.preprocessing import LabelEncoder
 from sklearn.pipeline import Pipeline
+from modules.evals import *
 
 from modules.AbstractNN import AbstractNN
 
@@ -32,10 +33,10 @@ class BaselineModel(AbstractNN):
         history = History()
 
         # Batchsize is number of samples you use for gradient descent update
-        model.fit(x, y, epochs=100, batch_size=100, callbacks=[history], verbose=2)
+        model.fit(x, y, epochs=20, batch_size=100, callbacks=[history], verbose=2)
 
         # Plotting
-        plot_lossvsepoch(history.epoch, history.history["loss"]), "baseline_losshistory.png")
+        #plot_lossvsepoch(history.epoch, history.history["loss"], "baseline_losshistory.png")
 
         # cores = model.evaluate(x, y)
         self._model = model.predict

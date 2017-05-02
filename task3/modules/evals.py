@@ -7,6 +7,6 @@ def plot_lossvsepoch(epochs, loss, filename):
 
     fig = plt.figure(figsize=(7, 5))
     ax = fig.add_subplot(111)
-    ax.scatter(epochs, loss, "o")
+    ax.scatter(epochs, loss)
     plt.savefig(filename)
 
