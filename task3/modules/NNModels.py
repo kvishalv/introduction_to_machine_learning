@@ -27,19 +27,13 @@ class BaselineModel(AbstractNN):
         model.add(Dense(64, activation='relu', input_dim=100))
         model.add(Dense(64, activation='relu'))
         model.add(Dense(5, activation='softmax'))
-        #model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
+        # model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
         model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
         history = History()
 
-        #dropout
-        #kfold validation
-        #optimize network (layer nr, neurons per layer, connectivity, sequential...)
-        #alternative to to_categorial function
-        #activation function is sigmoid(logistic) or hyperpbolic
-
-        #batchsize is number of samples you use for gradient descent update
+        # Batchsize is number of samples you use for gradient descent update
         model.fit(x, y, epochs=100, batch_size=100, callbacks=[history], verbose=2)
 
-        # scores = model.evaluate(x, y)
+        # cores = model.evaluate(x, y)
         self._model = model.predict
 
