@@ -11,9 +11,17 @@ import numpy as np
 
 OUTPUT =    True
 MANUALVALIDATE =  False
-Kfolds = 10
+Kfolds = 5
 
 learner = BaselineModel()
+
+"""
+To do:
+data preprocessing
+architecture optimization, drop, layers nodes etc
+custom loss function
+
+"""
 
 def main():
 
