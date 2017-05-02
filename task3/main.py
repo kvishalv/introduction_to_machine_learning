@@ -6,7 +6,7 @@ from modules.AbstractNN import *
 from modules.NNModels import *
 from modules.DataSets import *
 
-OUTPUT =    False
+OUTPUT =    True
 VALIDATE =  True
 
 learner = BaselineModel()
@@ -30,7 +30,7 @@ def main():
     if VALIDATE:
         verror = learner.validate_against(x_val, y_val)
         print("Validation error for", learner.__class__.__name__, "is:", verror)
-        print("Validation error - training error:", learner.__class__.__name__, "is:", verror - learner.train_error)
+        print("Training error - Validation error:", learner.__class__.__name__, "is:", learner.train_error - verror)
 
     if OUTPUT:
         test_set = DataSets.from_test_data('data/test.h5')

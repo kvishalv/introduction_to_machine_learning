@@ -23,18 +23,12 @@ class AbstractNN(object):
         return self._model(features)
 
 
-
     # Calls self.predict_from
     def validate_against(self, features, outputs):
         predictions = self.predict_from(features)
         y_est  = [np.argmax(x) for x in predictions]
         y_true = [np.argmax(x) for x in outputs]
         return self.accuracy(y_est, y_true)
-    """
-    def validate_against(self, features, outputs):
-        predictions = self.predict_from(features)
-        return self.accuracy(predictions, outputs)
-    """
 
     @property
     # Calls self.predict_from
@@ -47,8 +41,6 @@ class AbstractNN(object):
 
     @staticmethod
     def accuracy(predictions, true_values):
-        #print(predictions, '\n------\n', true_values)
-        #print('why im called thrice')
         return metrics.accuracy_score(predictions, true_values)
 
     @abc.abstractmethod
