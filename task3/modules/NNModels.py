@@ -6,6 +6,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
 from keras.wrappers.scikit_learn import KerasClassifier
 from keras.optimizers import SGD
+from keras.constraints import maxnorm
 from keras.utils import np_utils, to_categorical
 from keras.callbacks import History, Callback
 
@@ -26,10 +27,13 @@ class BaselineModel(AbstractNN):
 
 
         model.add(Dense(64, activation='relu', input_dim=100))
-        model.add(Dense(64, activation='relu'))
+        model.add(Dropout(0.2))
+        model.add(Dense(64, activation='relu', kernel_constraint=maxnorm(3)))
+        model.add(Dropout(0.2))
         model.add(Dense(5, activation='softmax'))
-        # model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
-        model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
+        sgd = SGD(lr=0.1, momentum=0.9, decay=0.0, nesterov=False)
+        model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+        #model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
         history = History()
 
         # Batchsize is number of samples you use for gradient descent update
