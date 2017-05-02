@@ -34,6 +34,9 @@ class BaselineModel(AbstractNN):
         # Batchsize is number of samples you use for gradient descent update
         model.fit(x, y, epochs=100, batch_size=100, callbacks=[history], verbose=2)
 
+        # Plotting
+        plot_lossvsepoch(history.epoch, history.history["loss"]), "baseline_losshistory.png")
+
         # cores = model.evaluate(x, y)
         self._model = model.predict
 
