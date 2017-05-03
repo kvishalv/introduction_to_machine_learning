@@ -11,7 +11,7 @@ import numpy as np
 
 OUTPUT =    True
 MANUALVALIDATE =  False
-Kfolds = 5
+Kfolds = 2
 
 learner = BaselineModel()
 
@@ -36,10 +36,9 @@ def main():
         )
 
     skf = StratifiedKFold(y_train[:, 1], n_folds=Kfolds, shuffle=True)
-
     cvscores = []
     for i, (train, test) in enumerate(skf):
-        print('K-fold:',i, 'of', Kfolds)
+        print('K-fold:',i+1, 'of', Kfolds)
         learner.learn_from(x_train[train], y_train[train])
         print("Training error for", learner.__class__.__name__, "is:", learner.train_error)
         kfolderror = learner.validate_against(x_train[test], y_train[test])

@@ -6,7 +6,9 @@ import numpy as np
 class AbstractNN(object):
 
     __metaclass__ = abc.ABCMeta
-    _model = NotImplemented
+    _model     = NotImplemented
+    _fwdTransform = NotImplemented
+    _bckTransform = NotImplemented
 
     # _train_features and _train_outputs are NumPy arrays
     def __init__(self):
@@ -20,12 +22,19 @@ class AbstractNN(object):
         self._train()
 
     def predict_from(self, features):
-        return self._model(features)
+        if self._fwdTransform is not NotImplemented:
+            features = self._fwdTransform(features)
+        predictions = self._model(features)
+        if self._bckTransform is not NotImplemented:
+            predictions = self._bckTransform(predictions)
+        return predictions
 
 
     # Calls self.predict_from
     def validate_against(self, features, outputs):
         predictions = self.predict_from(features)
+        if self._bckTransform is not NotImplemented:
+            predictions = self._bckTransform(predictions)
         y_est  = [np.argmax(x) for x in predictions]
         y_true = [np.argmax(x) for x in outputs]
         return self.accuracy(y_est, y_true)
@@ -34,6 +43,8 @@ class AbstractNN(object):
     # Calls self.predict_from
     def train_error(self):
         predictions = self.predict_from(self._train_features)
+        if self._bckTransform is not NotImplemented:
+            predictions = self._bckTransform(predictions)
         y_est = [np.argmax(x) for x in predictions]           # To revert the categorial labels to multiclass labels
         y_true = [np.argmax(x) for x in self._train_outputs]
 
@@ -46,3 +57,6 @@ class AbstractNN(object):
     @abc.abstractmethod
     def _train(self):
         raise NotImplementedError
+
+
+
