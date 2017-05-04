@@ -14,6 +14,7 @@ MANUALVALIDATE =  False
 Kfolds = 2
 
 learner = BaselineModel()
+# learner = ConvolutionalModel()
 
 """
 To do:
