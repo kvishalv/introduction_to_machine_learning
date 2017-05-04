@@ -6,12 +6,13 @@ from keras.utils import to_categorical
 from modules.AbstractNN import *
 from modules.NNModels import *
 from modules.DataSets import *
+import matplotlib.pyplot as plt
 
 import numpy as np
 
 OUTPUT =    True
 MANUALVALIDATE =  False
-Kfolds = 2
+Kfolds = 10
 
 learner = BaselineModel()
 # learner = ConvolutionalModel()
@@ -35,6 +36,13 @@ def main():
             stratify=y_train,
             random_state=42
         )
+
+    # y_train_cat = np.asarray([np.argmax(x) for x in y_train])
+    # print(np.where(y_train_cat == 0)[0].__len__())
+    # print(np.where(y_train_cat == 1)[0].__len__())
+    # print(np.where(y_train_cat == 2)[0].__len__())
+    # print(np.where(y_train_cat == 3)[0].__len__())
+    # print(np.where(y_train_cat == 4)[0].__len__())
 
     skf = StratifiedKFold(y_train[:, 1], n_folds=Kfolds, shuffle=True)
     cvscores = []
