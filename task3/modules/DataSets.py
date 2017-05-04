@@ -43,9 +43,8 @@ class DataSets(object):
         return train_i, train_x, train_y
 
     def write_labelled_output(self, filename):
-        y_est = [np.argmax(x) for x in self.outputs]
         np.savetxt(
-            filename, np.column_stack((self.ids, y_est)),
+            filename, np.column_stack((self.ids, self.outputs)),
             header="Id,y", comments="",
             delimiter=",", fmt="%i,%r"
         )

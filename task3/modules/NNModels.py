@@ -112,7 +112,7 @@ class BaselineModel(AbstractNN):
 
         # cores = model.evaluate(x, y)
 
-        self._model    = model.predict
+        self._model    = model.predict_classes
 
 
     def _addDim(self, data):
@@ -171,7 +171,7 @@ class ConvolutionalModel(AbstractNN):
 
         # cores = model.evaluate(x, y)
 
-        self._model    = model.predict
+        self._model    = model.predict_classes
 
 
     def _addDim(self, data):
