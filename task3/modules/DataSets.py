@@ -1,8 +1,5 @@
 import numpy as np
-import pandas as pd
-from keras.utils import to_categorical
-
-SHUFFLE = True
+from keras import utils as ku
 
 class DataSets(object):
 
@@ -12,32 +9,42 @@ class DataSets(object):
         self.outputs = outputs
 
     @classmethod
-    def from_train_data(cls, filename, shuffle=SHUFFLE):
-        data = cls._hdf_to_array(filename, "train")
-        train_id = data.index.values
-        train_y = data['y'].as_matrix()
-        train_y_cat = to_categorical(train_y, num_classes=5)        # Converts a class vector to binary class matrix
-        train_features = data.ix[:, 1:].astype(float).as_matrix()
-        return cls(train_id, train_features, train_y_cat)
+    def from_train_data(cls, filename, shuffle=True):
+        train_i, train_x, train_y = cls._read_hdf5(filename, 'train')
+        di = np.array(train_i.data)
+        dx = np.array(train_x.data)
+        dy = np.array(train_y.data)
+        if shuffle:
+            np.random.seed(1742)
+            data = np.column_stack((di, dy, dx))
+            np.random.shuffle(data)
+            di = data[:, 0]
+            dy = data[:, 1:6]
+            dx = data[:, 6:]
+        return cls(di, dx, dy)
 
     @classmethod
     def from_test_data(cls, filename):
-        data = cls._hdf_to_array(filename, "test")
-        test_id = data.index.values
-        test_features = data.astype(float).as_matrix()
-        return cls(test_id, test_features, None)
+        test_i, test_x, _ = cls._read_hdf5(filename, 'test')
+        di = np.array(test_i.data)
+        dx = np.array(test_x.data)
+        return cls(di, dx, None)
 
     @staticmethod
-    def _hdf_to_array(filename, key):
-        return pd.read_hdf(filename, key)
+    def _read_hdf5(filename, dataname):
+        train_i = ku.HDF5Matrix(filename, '%s/axis1' % dataname)
+        train_x = ku.HDF5Matrix(filename, '%s/block0_values' % dataname)
+        try:
+            train_y = ku.HDF5Matrix(filename, '%s/block1_values' % dataname)
+        except KeyError as e:
+            train_y = None
+        else:
+            train_y.data = ku.to_categorical(train_y.data, num_classes=5)
+        return train_i, train_x, train_y
 
     def write_labelled_output(self, filename):
-        y_est  = [np.argmax(x) for x in self.outputs]
-
         np.savetxt(
-            filename, np.column_stack((self.ids, y_est)),
+            filename, np.column_stack((self.ids, self.outputs)),
             header="Id,y", comments="",
             delimiter=",", fmt="%i,%r"
         )
-
-
