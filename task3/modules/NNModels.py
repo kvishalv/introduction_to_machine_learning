@@ -1,181 +1,195 @@
 #!/usr/bin/env python3
 
-import tensorflow
-import numpy as np
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation
-from keras.wrappers.scikit_learn import KerasClassifier
-from keras.optimizers import SGD
-from keras.constraints import maxnorm
-from keras.utils import np_utils, to_categorical
-from keras.callbacks import History, Callback
-# from keras.layers.convolutional import *
 from keras.layers import *
+from keras.layers.advanced_activations import ELU, PReLU
+from keras.models import Sequential
+from keras.optimizers import *
+from keras.wrappers.scikit_learn import KerasClassifier
+
 from keras import regularizers
 from keras import metrics
 
 from sklearn import model_selection
-from sklearn.preprocessing import LabelEncoder
-from sklearn.pipeline import Pipeline
-from modules.evals import *
 
 from modules.AbstractNN import AbstractNN
 
 
-def f1_score(y_true, y_pred):
+class GridLearner(AbstractNN):
 
-    # Count positive samples.
-    c1 = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-    c2 = K.sum(K.round(K.clip(y_pred, 0, 1)))
-    c3 = K.sum(K.round(K.clip(y_true, 0, 1)))
+    @staticmethod
+    def make_model(
+        layers=(768, 384),
+        initialization='he_uniform',
+        activation='prelu',
+        dropout=0.1,
+        lr=0.1,
+        momentum=0.9,
+        decay=0.0,
+        nesterov=True,
+        bn=False
+    ):
+        if activation == 'prelu':
+            activation = PReLU(shared_axes=[1])
 
-    # If there are no true samples, fix the F1 score at 0.
-    if c3 == 0:
-        return 0
+        model = Sequential()
 
-    # How many selected items are relevant?
-    precision = c1 / c2
+        model.add(Dropout(dropout, input_shape=(100,)))
 
-    # How many relevant items are selected?
-    recall = c1 / c3
+        for count in layers:
+            model.add(Dense(count, kernel_initializer=initialization)),
+            model.add(Activation(activation))
+            if bn:
+                model.add(BatchNormalization())
+            model.add(Dropout(dropout))
 
-    # Calculate f1_score
-    f1_score = 2 * (precision * recall) / (precision + recall)
-    return f1_score
+        model.add(Dense(5, kernel_initializer=initialization))
+        model.add(Activation('softmax'))
 
-class BaselineModel(AbstractNN):
+        model.compile(
+            loss='categorical_crossentropy',
+            optimizer=SGD(lr=lr, momentum=momentum, decay=decay, nesterov=nesterov),
+            metrics=['accuracy']
+        )
+        return model
+
     def _train(self):
         x = self._train_features
         y = self._train_outputs
-        if self._fwdTransform is not NotImplemented:
-            x = self._fwdTransform(x)
-            y = self._fwdTransform(y)
 
-        model = Sequential()
-        # model.add(Dense(64, activation='relu', input_dim=100))
-        # model.add(Dropout(0.2))
-        # model.add(Dense(64, activation='relu', kernel_constraint=maxnorm(3)))
-        # model.add(Dropout(0.2))
-        # model.add(Dense(5, activation='softmax'))
+        classifier = KerasClassifier(self.make_model)
 
-        # model.add(Dense(64, activation='relu',input_dim=100))
-        # model.add(Dense(64, activation='relu', kernel_constraint=maxnorm(3)))
-        # model.add(Dense(5, activation='softmax'))
+        okk = PReLU(shared_axes=[1])
+        param_grid = [{
+            'batch_size': [64],
+            'layers': [(768, 128)],
+            #'dropout': [0.1],
+            'shuffle': [True],
+            'epochs': [5, 10, 20, 40],
+            #'lr': [0.1],
+            'momentum': [0.9],
+            'decay': [0.001],
+            #'momentum': [0.9, 0.99],
+            #'decay': [0.001, 0.0001],
+            'bn': [False],
+            'verbose': [0]
+        }]
 
-        # model.add(Dense(256, activation='relu',input_dim=100))
-        # model.add(Dense(256, activation='relu', kernel_constraint=maxnorm(3)))
-        # model.add(Dense(256, activation='relu', kernel_regularizer=regularizers.l2(0.1)))
-        # model.add(Dropout(0.2))
-        # model.add(Dense(5, activation='softmax', activity_regularizer=regularizers.l1(0.1)))
+        grid = model_selection.GridSearchCV(
+            classifier, cv=2, n_jobs=4, param_grid=param_grid, verbose=1,
+            scoring = 'neg_log_loss'
+        )
+        grid_result = grid.fit(x, y)
 
-        # model.add(Dense(512, activation='relu',input_dim=100))
-            # model.add(Dense(512, activation='relu', kernel_regularizer=regularizers.l2(0.1)))
-            # model.add(Dropout(0.4))
-        # model.add(Dense(5, activation='softmax', activity_regularizer=regularizers.l1(0.1)))
+        print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+        means = grid_result.cv_results_['mean_test_score']
+        stds = grid_result.cv_results_['std_test_score']
+        params = grid_result.cv_results_['params']
+        for mean, stdev, param in zip(means, stds, params):
+            print("%f (%f) with: %r" % (mean, stdev, param))
 
-
-        model.add(Dense(768, input_dim=100, init="uniform", activation="relu"))
-        model.add(Dense(384, init="uniform", activation="relu"))
-        model.add(Dense(5, kernel_regularizer=regularizers.l2(0.0001)))
-        model.add(Activation("softmax"))
-        # softmax,relu,softplus,tanh,sigmoid,linear
-
-
-        # model.add(Dense(3000, input_dim=100, init="uniform", activation="relu"))
-        # model.add(Dense(1500, init="uniform", activation="relu"))
-        # model.add(Dense(5, kernel_regularizer=regularizers.l2(0.0001)))
-        # model.add(Activation("softmax"))
+        best_model = grid.best_estimator_.model
+        self._model = best_model.predict_classes
 
 
-        # model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
-        # model.compile(loss='categorical_crossentropy', optimizer='Adamax', metrics=['accuracy'])
-        # model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
-        # model.compile(loss='categorical_crossentropy', optimizer='Nadam', metrics=['accuracy'])
-        sgd = SGD(lr=0.1, momentum=0.9, decay=0.0, nesterov=False)
-        model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
-        # model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=[metrics.categorical_accuracy])
-        # model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=[metrics.top_k_categorical_accuracy])
-        # model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy', f1_score])
-        # model.compile(loss='cosine_proximity', optimizer=sgd, metrics=['accuracy', f1_score])
+class BaselineModel(AbstractNN):
 
-        history = History()
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
 
-        # Batchsize is number of samples you use for gradient descent update
-        model.fit(x, y, epochs=20, batch_size=100, callbacks=[history], verbose=2)
+        model = Sequential([
+            Dropout(0.1, input_shape=(100,)),
+            Dense(1536, kernel_initializer='he_uniform'),
+            Activation(PReLU(shared_axes=[1])),
+            Dropout(0.1),
+            Dense(1536, kernel_initializer='he_uniform'),
+            Activation(PReLU(shared_axes=[1])),
+            Dropout(0.1),
+            Dense(5),
+            Activation('softmax'),
+        ])
 
-        # for layer in model.layers:
-            # weights = layer.get_weights()
-            # print(layer, weights)
+        sgd = SGD(lr=0.1, momentum=0.9, decay=0.001, nesterov=True)
+        model.compile(
+            loss='categorical_crossentropy',
+            optimizer=sgd,
+            metrics=['accuracy']
+        )
 
-        # Plotting
-        #plot_lossvsepoch(history.epoch, history.history["loss"], "baseline_losshistory.png")
+        x_train, x_val, y_train, y_val = model_selection.train_test_split(
+            x, y,
+            train_size=0.85,
+            stratify=y,
+            random_state=1743
+        )
 
-        # cores = model.evaluate(x, y)
+        model.fit(
+            x_train, y_train,
+            epochs=5,
+            batch_size=64,
+            validation_data=(x_val, y_val),
+            shuffle=True,
+            verbose=1
+        )
 
-        self._model    = model.predict_classes
-
-
-    def _addDim(self, data):
-        return data[None, :, :]
-
-    def _rmvDim(self, data):
-        return np.squeeze(data)
-
-
-
+        self._model = model.predict_classes
 
 
 class ConvolutionalModel(AbstractNN):
-    def _train(self):
-        self._fwdTransform = self._addDim
-        self._bckTransform = self._rmvDim
 
+    def _train(self):
         x = self._train_features
         y = self._train_outputs
-        if self._fwdTransform is not NotImplemented:
-            x = self._fwdTransform(x)
-            y = self._fwdTransform(y)
 
-        model = Sequential()
+        model = Sequential([
+            Reshape((10, 10, -1), input_shape=(100,)),
 
-        model.add(Dense(64, activation='relu', input_shape=(None, x.shape[2])))
-        model.add(Conv1D(filters=5, kernel_size=1, strides=1, activation='linear', input_shape=(None, x.shape[2]), padding='same'))
-        model.add(Dense(64, activation='relu', input_shape=(None, x.shape[2])))
-        model.add(Dense(5, activation='softmax', input_shape=(None, x.shape[2])))
+            Conv2D(32, (3, 3), padding='same'),
+            Activation(PReLU(shared_axes=[1, 2])),
+            Conv2D(64, (2, 2), padding='same'),
+            Activation(PReLU(shared_axes=[1, 2])),
+            Conv2D(64, (2, 2), padding='same'),
+            Activation(PReLU(shared_axes=[1, 2])),
+            MaxPooling2D(pool_size=(2, 2)),
+            Dropout(0.2),
 
+            Flatten(),
 
-        # model.add(Conv1D(filters=5, kernel_size=1, strides=1, activation='linear', input_shape=(None, x.shape[2]), padding='same'))
-        # model.add(Conv1D(filters=5, kernel_size=1, strides=1, activation='linear', input_shape=(None, x.shape[2]), padding='same'))
-        # model.add(MaxPooling1D( input_shape=(None, x.shape[2]), pool_size=2, strides=1, padding='same'))
-        # model.add(Dropout(0.25))
-            # model.add(Flatten(input_shape=(None, x.shape[2])))
-        # model.add(Dense(128, activation='relu'))
-        # model.add(Dropout(0.5))
-        # model.add(Dense(5, activation='softmax'))
+            Dense(256, kernel_initializer='he_uniform'),
+            Activation(PReLU(shared_axes=[1])),
+            Dropout(0.5),
 
+            Dense(256, kernel_initializer='he_uniform'),
+            Activation(PReLU(shared_axes=[1])),
+            Dropout(0.2),
 
+            Dense(5, kernel_initializer='he_uniform'),
+            Activation('softmax'),
+        ])
 
+        model.summary()
 
-        sgd = SGD(lr=0.1, momentum=0.9, decay=0.0, nesterov=False)
-        # model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
-        model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=[metrics.categorical_accuracy])
+        model.compile(
+            loss='categorical_crossentropy',
+            optimizer=Adam(),
+            metrics=['accuracy']
+        )
 
+        #history = History()
+        x_train, x_val, y_train, y_val = model_selection.train_test_split(
+            x, y,
+            train_size=0.85,
+            stratify=y,
+            random_state=1742
+        )
 
-        history = History()
+        model.fit(
+            x_train, y_train,
+            epochs=50,
+            batch_size=64,
+            validation_data=(x_val, y_val),
+            shuffle=True,
+            verbose=1
+        )
 
-        # Batchsize is number of samples you use for gradient descent update
-        model.fit(x, y, epochs=25, batch_size=100, callbacks=[history], verbose=2)
-
-        # Plotting
-        #plot_lossvsepoch(history.epoch, history.history["loss"], "baseline_losshistory.png")
-
-        # cores = model.evaluate(x, y)
-
-        self._model    = model.predict_classes
-
-
-    def _addDim(self, data):
-        return data[None, :, :]
-
-    def _rmvDim(self, data):
-        return np.squeeze(data)
+        self._model = model.predict_classes
