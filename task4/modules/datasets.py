@@ -34,10 +34,10 @@ class H5DataSet(object):
         except KeyError:
             train_y = None
 
-        train_i = np.array(train_i.data)
+        train_i = np.array(train_i.data).astype('int')
         train_x = np.array(train_x.data)
         if train_y is not None:
-            train_y = np.array(train_y.data)
+            train_y = np.array(train_y.data).astype('int')
 
         return train_i, train_x, train_y
 
@@ -46,8 +46,8 @@ class H5DataSet(object):
         np.random.seed(1742)
         data = np.column_stack((mi, my, mx))
         np.random.shuffle(data)
-        mi = data[:, 0]
-        my = data[:, 1]
+        mi = data[:, 0].astype('int')
+        my = data[:, 1].astype('int')
         mx = data[:, 2:]
         return mi, my, mx
 
