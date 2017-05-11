@@ -57,3 +57,44 @@ class H5DataSet(object):
             header="Id,y", comments="",
             delimiter=",", fmt="%i,%r"
         )
+
+
+class CSVDataSet(object):
+
+    def __init__(self, ids, features, outputs):
+        self.ids = ids
+        self.features = features
+        self.outputs = outputs
+
+    @classmethod
+    def from_labeled_data(cls, filename, shuffle=True):
+        data = cls._csv_to_array(filename)
+        if shuffle:
+            np.random.seed(1742)
+            np.random.shuffle(data)
+        mi = data[:, 0].astype('int')
+        my = data[:, 1].astype('int')
+        mx = data[:, 2:]
+        return cls(mi, mx, my)
+
+    @classmethod
+    def from_unlabeled_data(cls, filename):
+        data = cls._csv_to_array(filename)
+        mi = data[:, 0].astype('int')
+        mx = data[:, 1:]
+        return cls(mi, mx, None)
+
+    @classmethod
+    def from_test_data(cls, filename):
+        return cls.from_unlabeled_data(filename)
+
+    @staticmethod
+    def _csv_to_array(filename):
+        return np.genfromtxt(filename, delimiter=',', skip_header=True)
+
+    def write_labelled_output(self, filename):
+        np.savetxt(
+            filename, np.column_stack((self.ids, self.outputs)),
+            header="Id,y", comments="",
+            delimiter=",", fmt="%i,%r"
+        )
