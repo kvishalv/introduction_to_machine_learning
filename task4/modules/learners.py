@@ -70,6 +70,38 @@ class GridLearner(AbstractLearner):
         self._model = grid.predict
 
 
+class NuSVCLearner(AbstractLearner):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        pipe = pipeline.Pipeline([
+            ('drop', transformers.ColumnDropper(
+                columns=(0, 3, 5, 14, 26, 35, 40, 65, 72, 95, 99, 104, 124)
+            )),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True
+            )),
+            ('select', feature_selection.SelectPercentile(
+                percentile=57,
+                score_func=feature_selection.f_classif
+            )),
+            ('estim', svm.NuSVC(
+                nu=0.05,
+                kernel='rbf',
+                gamma='auto',
+                shrinking=True,
+                class_weight='balanced',
+                random_state=1742
+            )),
+        ])
+
+        pipe.fit(x, y)
+        self._model = pipe.predict
+
+
 class QuadraticDiscriminantLearner(AbstractLearner):
 
     def _train(self):
