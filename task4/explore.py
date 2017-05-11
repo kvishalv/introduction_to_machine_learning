@@ -18,6 +18,7 @@ def main():
     print()
     for c in classes:
         print('Labeled samples of class', c, ':', len(ly[ly == c]))
+   # 'Features [0 3 5 14 26 35 40 65 72 95 99 104 124] are constant.'
 
 
 def read_data():
