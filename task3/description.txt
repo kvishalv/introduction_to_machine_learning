@@ -1,0 +1,11 @@
+We exclusively used Neural Newtorks in this task, through Keras. We focused on fully-connected nets of 2 to 4 hidden layers, with sizes ranging from 256 to 3000. We also tried CNNs, with moderate success; lacking a GPU machine, training these was too time-consuming.
+
+To tune our hyperparametres, we wrapped our Keras models to behave like SciKit classifiers. We then reused our tuning framework from task 2 (GridSearchCV). We chose the CV log-loss as the target metric, although it did not exactly correspond to CV-accuracy.
+
+The linear units ('ReLU' & 'PReLU') outperformed all other activations ('tanh', 'sigmoid', 'ELU') in accuracy and training speed. Our best models employed PReLU with per-layer alpha sharing. The output of the final layer was connected to a 'softmax' activation. We initialized weights according to 'PReLU' paper, aka 'he_uniform' in Keras; we noticed an improved convergence to a good accuracy score.
+
+We regularized the weights of the output layer using a small L2 penalty; we used 20% Dropout between our hidden layers to prevent our net from overfitting.
+
+For brief training (~20 epochs), Adam and Nadam optimizers provided the best results; for long training (>= 100 epochs), the SGD optimizer+Nesterov momentum converged faster.
+
+The model submitted is a 3-layer model of 1024 FC units, trained for 100 epochs on batches of size 64. It performed really well under strong validation (> 95.2% acc on 20% held-out data), and had the best public score overall.
