@@ -85,15 +85,15 @@ class NuSVCLearner(AbstractLearner):
                 with_std=True
             )),
             ('select', feature_selection.SelectPercentile(
-                percentile=57,
-                score_func=feature_selection.f_classif
+                percentile=59,
+                score_func=feature_selection.mutual_info_classif
             )),
             ('estim', svm.NuSVC(
-                nu=0.05,
+                nu=0.0525,
                 kernel='rbf',
                 gamma='auto',
                 shrinking=True,
-                class_weight='balanced',
+                class_weight=None,
                 random_state=1742
             )),
         ])
