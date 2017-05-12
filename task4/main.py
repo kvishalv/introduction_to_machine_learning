@@ -10,27 +10,36 @@ from modules.learners import *
 
 warnings.simplefilter('ignore')
 
-OUTPUT   = True
-VALIDATE = True
+VALIDATE      = True
+USE_UNLABELED = True
+OUTPUT        = True
 
 learner = QuadraticDiscriminantLearner()
 #learner = GridLearner()
 
 def main():
-    train_set = H5DataSet.from_labeled_data('./data/train_labeled.h5')
-    x_train, y_train = train_set.features, train_set.outputs
+    labeled_set = H5DataSet.from_labeled_data('./data/train_labeled.h5')
+    x_label, y_label = labeled_set.features, labeled_set.outputs
 
     if VALIDATE:
-        x_train, x_val, y_train, y_val = model_selection.train_test_split(
-            x_train, y_train,
-            train_size=0.90,
+        x_label, x_val, y_label, y_val = model_selection.train_test_split(
+            x_label, y_label,
+            train_size=0.80,
             stratify=y_train,
             random_state=1742
         )
 
-    learner.learn_from(x_train, y_train)
+    if USE_UNLABELED:
+        unlabeled_set = H5DataSet.from_unlabeled_data('./data/train_unlabeled.h5')
+        x_unlabel = unlabeled_set.features
+        y_unlabel = -np.ones(len(x_unlabel))
 
+        x_label = np.concatenate((x_label, x_unlabel))
+        y_label = np.concatenate((y_label, y_unlabel))
+
+    learner.learn_from(x_label, y_label)
     train_acc = learner.train_error
+
     print('Scoring:')
     print('=======')
     print("Classifier:", learner.__class__.__name__)
