@@ -18,6 +18,32 @@ def main():
     print()
     for c in classes:
         print('Labeled samples of class', c, ':', len(ly[ly == c]))
+
+    columnstats = []
+    for f in range(features):
+        cl = lx[:, f]
+        cu = ux[:, f]
+        ct = tx[:, f]
+
+        sl = len(set(cl))
+        su = len(set(cu))
+        st = len(set(ct))
+
+        zl = 100 * len(cl[cl != 0.0]) / len(cl)
+        zu = 100 * len(cu[cu != 0.0]) / len(cu)
+        zt = 100 * len(ct[ct != 0.0]) / len(ct)
+
+        columnstats.append((sl, su, st, f, zl, zu, zt))
+
+    print()
+    print('\n\t\tUnique values\t    | % of elements non zero')
+    print('\t\t=============================================')
+    print('\t\tLabeled\tUnlab.\tTest| Labeled\tUnlab.\tTest')
+    for sl, su, st, f, zl, zu, zt in sorted(columnstats):
+        print('Feature: x%3d: \t%3d \t%3d \t%3d | \t%.3f \t%.3f \t%.3f' % (
+            f, sl, su, st, zl, zu, zt,
+        ))
+
    # 'Features [0 3 5 14 26 35 40 65 72 95 99 104 124] are constant.'
 
 
