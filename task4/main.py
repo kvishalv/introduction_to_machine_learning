@@ -36,10 +36,10 @@ def main():
         x_unlabel = unlabeled_set.features
 
         if USE_TRANSDUCE:
-            y_unlabel = -np.ones(len(x_unlabel))
-        else:
             trsd_set = CSVDataSet.from_unlabeled_data('./data/transduced.csv')
             y_unlabel = trsd_set.outputs
+        else:
+            y_unlabel = -np.ones(len(x_unlabel))
 
         x_train = np.concatenate((x_label, x_unlabel))
         y_train = np.concatenate((y_label, y_unlabel))
