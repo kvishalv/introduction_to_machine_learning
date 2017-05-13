@@ -37,7 +37,7 @@ def main():
 
         if USE_TRANSDUCE:
             trsd_set = CSVDataSet.from_unlabeled_data('./data/transduced.csv')
-            y_unlabel = trsd_set.outputs
+            y_unlabel = trsd_set.features[:, 0]
         else:
             y_unlabel = -np.ones(len(x_unlabel))
 
