@@ -8,6 +8,7 @@ class AbstractLearner(object):
     __metaclass__ = abc.ABCMeta
 
     _model = NotImplemented
+    _transduction = NotImplemented
 
     # _train_features and _train_outputs are NumPy arrays
     def __init__(self):
@@ -41,3 +42,6 @@ class AbstractLearner(object):
     @abc.abstractmethod
     def _train(self):
         raise NotImplementedError
+
+    def get_transduction(self):
+        return self._transduction
