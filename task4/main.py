@@ -12,6 +12,8 @@ warnings.simplefilter('ignore')
 
 VALIDATE      = True
 USE_UNLABELED = True
+USE_TRANSDUCE = True
+OUT_TRANSDUCE = True
 OUTPUT        = True
 
 learner = QuadraticDiscriminantLearner()
@@ -25,20 +27,32 @@ def main():
         x_label, x_val, y_label, y_val = model_selection.train_test_split(
             x_label, y_label,
             train_size=0.80,
-            stratify=y_train,
+            stratify=y_label,
             random_state=1742
         )
 
     if USE_UNLABELED:
         unlabeled_set = H5DataSet.from_unlabeled_data('./data/train_unlabeled.h5')
         x_unlabel = unlabeled_set.features
-        y_unlabel = -np.ones(len(x_unlabel))
 
-        x_label = np.concatenate((x_label, x_unlabel))
-        y_label = np.concatenate((y_label, y_unlabel))
+        if USE_TRANSDUCE:
+            y_unlabel = -np.ones(len(x_unlabel))
+        else:
+            trsd_set = CSVDataSet.from_unlabeled_data('./data/transduced.csv')
+            y_unlabel = trsd_set.outputs
 
-    learner.learn_from(x_label, y_label)
+        x_train = np.concatenate((x_label, x_unlabel))
+        y_train = np.concatenate((y_label, y_unlabel))
+    else:
+        x_train = x_label
+        y_train = y_label
+
+    learner.learn_from(x_train, y_train)
     train_acc = learner.train_error
+
+    if USE_UNLABELED and OUT_TRANSDUCE:
+        unlabeled_set.outputs = learner.get_transduction()[len(x_label):]
+        unlabeled_set.write_labelled_output('./data/transduced.csv')
 
     print('Scoring:')
     print('=======')
