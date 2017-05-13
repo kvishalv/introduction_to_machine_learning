@@ -235,7 +235,8 @@ class KNNLearner(AbstractLearner):
             ('estim', neighbors.KNeighborsClassifier(
                 n_neighbors=16,
                 weights='distance',
-                metric='euclidean'
+                metric='euclidean',
+                n_jobs=-1
             ))
         ])
 
