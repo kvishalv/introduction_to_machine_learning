@@ -15,10 +15,9 @@ from sklearn import (
     pipeline,
     preprocessing,
     linear_model,
+    semi_supervised,
     svm,
-    ensemble,
     tree,
-    svm
 )
 
 
@@ -68,6 +67,37 @@ class GridLearner(AbstractLearner):
         print("CV Score:", grid.best_score_)
 
         self._model = grid.predict
+
+
+class LabelSpreadingLearner(AbstractLearner):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        pipe = pipeline.Pipeline([
+            ('drop', transformers.ColumnDropper(
+                columns=(0, 3, 5, 14, 26, 35, 40, 65, 72, 95, 99, 104, 124)
+            )),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=False
+            )),
+            ('select', feature_selection.SelectPercentile(
+                percentile=74,
+                score_func=feature_selection.f_classif
+            )),
+            ('estim', semi_supervised.LabelSpreading(
+                kernel='knn',
+                alpha=0.2,
+                n_neighbors=5,
+                n_jobs=-1
+            )),
+        ])
+
+        pipe.fit(x, y)
+        self._transduction = pipe.named_steps['estim'].transduction_
+        self._model = pipe.predict
 
 
 class NuSVCLearner(AbstractLearner):
