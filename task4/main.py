@@ -5,7 +5,7 @@ import warnings
 import numpy as np
 from sklearn import model_selection
 
-from modules.datasets import H5DataSet
+from modules.datasets import H5DataSet, CSVDataSet
 from modules.learners import *
 
 warnings.simplefilter('ignore')
