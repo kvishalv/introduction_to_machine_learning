@@ -118,13 +118,13 @@ class LabelSpreadingLearner(AbstractLearner):
                 with_std=False
             )),
             ('select', feature_selection.SelectPercentile(
-                percentile=74,
+                percentile=71,
                 score_func=feature_selection.f_classif
             )),
             ('estim', semi_supervised.LabelSpreading(
                 kernel='knn',
-                alpha=0.2,
-                n_neighbors=5,
+                alpha=0.17,
+                n_neighbors=7,
                 n_jobs=-1
             )),
         ])
