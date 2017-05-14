@@ -68,7 +68,7 @@ class GridLearner(AbstractLearner):
 
         estimator = pipe.named_steps['estim']
         if hasattr(estimator, 'transduction_'):
-            self._transduction = pipe.named_steps['estim'].transduction_
+            self._transduction = estimator.transduction_
         self._model = grid.predict
 
 
