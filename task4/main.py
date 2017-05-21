@@ -12,8 +12,8 @@ warnings.simplefilter('ignore')
 
 VALIDATE      = True
 USE_UNLABELED = True
-USE_TRANSDUCE = True
-OUT_TRANSDUCE = True
+USE_TRANSDUCE = False
+OUT_TRANSDUCE = False
 OUTPUT        = True
 
 learner = QuadraticDiscriminantLearner()
