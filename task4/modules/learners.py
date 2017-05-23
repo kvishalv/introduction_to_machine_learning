@@ -18,6 +18,7 @@ from sklearn import (
     semi_supervised,
     svm,
     tree,
+    manifold
 )
 
 
@@ -91,7 +92,7 @@ class LabelPropagationLearner(AbstractLearner):
                 score_func=feature_selection.mutual_info_classif
             )),
             ('estim', semi_supervised.LabelPropagation(
-                kernel='knn',
+                kernel='rbf',
                 alpha=0.65,
                 n_neighbors=4,
                 n_jobs=-1
@@ -303,4 +304,36 @@ class NearestCentroidLearner(AbstractLearner):
         ])
 
         pipe.fit(x, y)
+        self._model = pipe.predict
+
+
+class ManifoldLLELearner(AbstractLearner):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        pipe = pipeline.Pipeline([
+            ('drop', transformers.ColumnDropper(
+                columns=(0, 3, 5, 14, 26, 35, 40, 65, 72, 95, 99, 104, 124)
+            )),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True
+            )),
+            ('select', feature_selection.SelectKBest(
+                k=101,
+                score_func=feature_selection.f_classif
+            )),
+            ('estim', manifold.locally_linear_embedding(
+                x,
+                n_neighbors=6,
+                n_components=101,
+                eigen_solver='auto',
+                method='standard'
+
+            )),
+        ])
+
+        pipe.fit_transform(x)
         self._model = pipe.predict

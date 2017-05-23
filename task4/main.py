@@ -18,6 +18,7 @@ OUTPUT        = True
 
 learner = QuadraticDiscriminantLearner()
 #learner = GridLearner()
+#learner = ManifoldLLELearner()
 
 def main():
     labeled_set = H5DataSet.from_labeled_data('./data/train_labeled.h5')
