@@ -1,12 +1,6 @@
-import itertools
-
-import numpy as np
-
 from sklearn import (
     decomposition,
     discriminant_analysis,
-    dummy,
-    ensemble,
     feature_selection,
     metrics,
     model_selection,
@@ -14,12 +8,12 @@ from sklearn import (
     neighbors,
     pipeline,
     preprocessing,
-    linear_model,
     semi_supervised,
     svm,
     tree,
     gaussian_process,
-    neural_network
+    neural_network,
+    manifold
 )
 
 
@@ -74,7 +68,7 @@ class GridLearner(AbstractLearner):
 
         grid = model_selection.GridSearchCV(
             pipe, cv=9, n_jobs=16, param_grid=param_grid, verbose=1,
-            scoring = metrics.make_scorer(metrics.accuracy_score),
+            scoring=metrics.make_scorer(metrics.accuracy_score),
         )
         grid.fit(x, y)
 
@@ -109,7 +103,7 @@ class LabelPropagationLearner(AbstractLearner):
                 score_func=feature_selection.mutual_info_classif
             )),
             ('estim', semi_supervised.LabelPropagation(
-                kernel='knn',
+                kernel='rbf',
                 alpha=0.65,
                 n_neighbors=4,
                 n_jobs=-1
@@ -324,15 +318,16 @@ class NearestCentroidLearner(AbstractLearner):
 
 
 
-class test(AbstractLearner):
+class ManifoldLLELearner(AbstractLearner):
 
     def _train(self):
         x = self._train_features
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            #('kselect', feature_selection.SelectKBest(feature_selection.f_regression, k=115)),
-            ('drop', transformers.ColumnDropper(columns=(0, 3, 5, 14, 26, 35, 40, 65, 72, 95, 99, 104, 124))),
+            ('drop', transformers.ColumnDropper(
+                columns=(0, 3, 5, 14, 26, 35, 40, 65, 72, 95, 99, 104, 124)
+            )),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
                 with_std=True
@@ -341,25 +336,27 @@ class test(AbstractLearner):
                 percentile=59,#59,
                 score_func=feature_selection.mutual_info_classif
             )),
-            #('estim', gaussian_process.GaussianProcessClassifier(max_iter_predict=5)),
-            #('estim', tree.DecisionTreeClassifier(max_depth=15)),
-            #('estim', ensemble.RandomForestClassifier(max_depth=15, n_estimators=100)),
-            #('estim', neural_network.MLPClassifier(hidden_layer_sizes=(2500,4), activation='relu', solver='adam', alpha=0.0001)),
-            #('estim', ensemble.AdaBoostClassifier()),
-            #('estim', naive_bayes.GaussianNB()),
-            #('estim', svm.SVC(C=1.1, kernel='rbf', gamma='auto', shrinking=True)),#degree, C, 'auto' 'sigmoid'
-            #('estim', svm.NuSVC(nu=0.0525, kernel='poly', coef0=0.1, degree=3, gamma='auto', shrinking=True)),
+            ('select', feature_selection.SelectKBest(
+                k=101,
+                score_func=feature_selection.f_classif
+            )),
+            ('estim', manifold.locally_linear_embedding(
+                x,
+                n_neighbors=6,
+                n_components=101,
+                eigen_solver='auto',
+                method='standard'
+
+            )),
         ])
 
-        pipe.fit(x, y)
+        pipe.fit_transform(x)
         self._model = pipe.predict
 
 
 
 
-
-
-class BaselineModel(AbstractNN):
+class BaselineModel3(AbstractNN):
 
     def _train(self):
         x = self._train_features
@@ -390,6 +387,8 @@ class BaselineModel(AbstractNN):
         model.fit(x, y, epochs=30, batch_size=128, callbacks=[history], verbose=2, validation_data=(x_val, y_val), shuffle=2)
 
         self._model = model.predict_classes
+
+
 
 
 class BaselineModel2(AbstractNN):

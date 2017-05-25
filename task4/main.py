@@ -8,7 +8,7 @@ from sklearn import model_selection
 from modules.datasets import H5DataSet, CSVDataSet
 from modules.learners import *
 from random import randint
-
+from modules.NNModels import *
 
 warnings.simplefilter('ignore')
 
@@ -18,9 +18,11 @@ USE_TRANSDUCE = False
 OUT_TRANSDUCE = False
 OUTPUT        = True
 
+
 #learner = test()
 #learner = GridLearner()
-learner = BaselineModel()
+learner = BaselineModel3()
+#learner = ManifoldLLELearner()
 
 def main():
     labeled_set = H5DataSet.from_labeled_data('./data/train_labeled.h5')
