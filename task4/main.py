@@ -7,16 +7,17 @@ from sklearn import model_selection
 
 from modules.datasets import H5DataSet, CSVDataSet
 from modules.learners import *
+from modules.NNModels import *
 
 warnings.simplefilter('ignore')
 
 VALIDATE      = True
-USE_UNLABELED = True
+USE_UNLABELED = False
 USE_TRANSDUCE = False
 OUT_TRANSDUCE = False
 OUTPUT        = True
 
-learner = QuadraticDiscriminantLearner()
+learner = BaselineModel()
 #learner = GridLearner()
 #learner = ManifoldLLELearner()
 

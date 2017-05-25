@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 from keras.layers import *
-from keras.layers.advanced_activations import ELU, PReLU
+from keras.layers.advanced_activations import PReLU
 from keras.models import Sequential
 from keras.optimizers import *
 from keras.wrappers.scikit_learn import KerasClassifier
 
 from keras import regularizers
 from keras import metrics
+from keras.utils import to_categorical
 
 from sklearn import model_selection
 
@@ -98,14 +99,14 @@ class BaselineModel(AbstractNN):
         y = self._train_outputs
 
         model = Sequential([
-            Dropout(0.1, input_shape=(100,)),
-            Dense(1536, kernel_initializer='he_uniform'),
+            Dropout(0.1, input_shape=(128,)),
+            Dense(768, kernel_initializer='he_uniform'),
             Activation(PReLU(shared_axes=[1])),
             Dropout(0.1),
-            Dense(1536, kernel_initializer='he_uniform'),
+            Dense(768, kernel_initializer='he_uniform'),
             Activation(PReLU(shared_axes=[1])),
             Dropout(0.1),
-            Dense(5),
+            Dense(10),
             Activation('softmax'),
         ])
 
@@ -124,117 +125,12 @@ class BaselineModel(AbstractNN):
         )
 
         model.fit(
-            x_train, y_train,
+            x_train, to_categorical(y_train, num_classes=10),
             epochs=5,
             batch_size=64,
-            validation_data=(x_val, y_val),
+            validation_data=(x_val, to_categorical(y_val, num_classes=10)),
             shuffle=True,
-            verbose=1
-        )
-
-        self._model = model.predict_classes
-
-
-class ConvolutionalModel(AbstractNN):
-
-    def _train(self):
-        x = self._train_features
-        y = self._train_outputs
-
-        model = Sequential([
-            Reshape((10, 10, -1), input_shape=(100,)),
-
-            Conv2D(32, (3, 3), padding='same'),
-            Activation(PReLU(shared_axes=[1, 2])),
-            Conv2D(64, (2, 2), padding='same'),
-            Activation(PReLU(shared_axes=[1, 2])),
-            Conv2D(64, (2, 2), padding='same'),
-            Activation(PReLU(shared_axes=[1, 2])),
-            MaxPooling2D(pool_size=(2, 2)),
-            Dropout(0.2),
-
-            Flatten(),
-
-            Dense(256, kernel_initializer='he_uniform'),
-            Activation(PReLU(shared_axes=[1])),
-            Dropout(0.5),
-
-            Dense(256, kernel_initializer='he_uniform'),
-            Activation(PReLU(shared_axes=[1])),
-            Dropout(0.2),
-
-            Dense(5, kernel_initializer='he_uniform'),
-            Activation('softmax'),
-        ])
-
-        model.summary()
-
-        model.compile(
-            loss='categorical_crossentropy',
-            optimizer=Adam(),
-            metrics=['accuracy']
-        )
-
-        #history = History()
-        x_train, x_val, y_train, y_val = model_selection.train_test_split(
-            x, y,
-            train_size=0.85,
-            stratify=y,
-            random_state=1742
-        )
-
-        model.fit(
-            x_train, y_train,
-            epochs=50,
-            batch_size=64,
-            validation_data=(x_val, y_val),
-            shuffle=True,
-            verbose=1
-        )
-
-        self._model = model.predict_classes
-
-
-
-class AutoencoderModel(AbstractNN):
-
-    def _train(self):
-        x = self._train_features
-        y = self._train_outputs
-
-        model = Sequential([
-            Dropout(0.1, input_shape=(100,)),
-            Dense(1536, kernel_initializer='he_uniform'),
-            Activation(PReLU(shared_axes=[1])),
-            Dropout(0.1),
-            Dense(1536, kernel_initializer='he_uniform'),
-            Activation(PReLU(shared_axes=[1])),
-            Dropout(0.1),
-            Dense(5),
-            Activation('softmax'),
-        ])
-
-        sgd = SGD(lr=0.1, momentum=0.9, decay=0.001, nesterov=True)
-        model.compile(
-            loss='categorical_crossentropy',
-            optimizer=sgd,
-            metrics=['accuracy']
-        )
-
-        x_train, x_val, y_train, y_val = model_selection.train_test_split(
-            x, y,
-            train_size=0.85,
-            stratify=y,
-            random_state=1743
-        )
-
-        model.fit(
-            x_train, y_train,
-            epochs=5,
-            batch_size=64,
-            validation_data=(x_val, y_val),
-            shuffle=True,
-            verbose=1
+            verbose=2
         )
 
         self._model = model.predict_classes
