@@ -1,12 +1,6 @@
-import itertools
-
-import numpy as np
-
 from sklearn import (
     decomposition,
     discriminant_analysis,
-    dummy,
-    ensemble,
     feature_selection,
     metrics,
     model_selection,
@@ -14,7 +8,6 @@ from sklearn import (
     neighbors,
     pipeline,
     preprocessing,
-    linear_model,
     semi_supervised,
     svm,
     tree,
@@ -57,7 +50,7 @@ class GridLearner(AbstractLearner):
 
         grid = model_selection.GridSearchCV(
             pipe, cv=9, n_jobs=16, param_grid=param_grid, verbose=1,
-            scoring = metrics.make_scorer(metrics.accuracy_score),
+            scoring=metrics.make_scorer(metrics.accuracy_score),
         )
         grid.fit(x, y)
 
