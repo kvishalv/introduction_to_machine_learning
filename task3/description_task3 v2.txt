@@ -1,0 +1,7 @@
+Description task 3
+
+We have chosen the library keras. We first used a simple feedforward neural network. Then, as we suspected features might represent an image or audio, we tried to implement a convolutional network using convolution1d layer of keras. However no matter what parameters and setup we tried, it did not improve the result.
+
+Then, we mainly focused on feedforward neural network. By trial and error, we figured 3 layers offered the best results. Then, we started changing activation values. relu for first two layers and softmax for the last layer gave the best results, although some activation layers offered similar results. 
+
+Note that we used the same framework for previous tasks, however we initially had k-fold cross validation and naively selected k to be 2 for speed. However that also meant we lost half of our training data for validation, reducing our accuracy more than 1%. When we realized this, we decided to spare some time to make sure we would have a good private score. That is why we roughly increased the density of layers to 4 fold, and had a 10 fold cross validation. As a result, all of the validations had scores between 0.9515-0.957 with a mean of 0.953. We submitted that result and had our public result exactly same which implies reliability. After this point, we have played around with different parameters and combinations without k-fold cross validation. However I decided to submit the 10 times tested result as it was already above the hard baseline. 

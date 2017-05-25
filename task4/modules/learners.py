@@ -18,12 +18,30 @@ from sklearn import (
     semi_supervised,
     svm,
     tree,
+    gaussian_process,
+    neural_network
 )
 
 
 from modules.AbstractLearner import AbstractLearner
 from modules import transformers
 
+
+from modules.AbstractNN import AbstractNN
+import tensorflow
+import numpy as np
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Activation
+from keras.wrappers.scikit_learn import KerasClassifier
+from keras.optimizers import SGD
+from keras.constraints import maxnorm
+from keras.utils import np_utils, to_categorical
+from keras.callbacks import History, Callback
+# from keras.layers.convolutional import *
+from keras.layers import *
+from keras import regularizers
+from keras import metrics
+from keras import utils as ku
 
 class GridLearner(AbstractLearner):
 
@@ -141,15 +159,14 @@ class NuSVCLearner(AbstractLearner):
         y = self._train_outputs
 
         pipe = pipeline.Pipeline([
-            ('drop', transformers.ColumnDropper(
-                columns=(0, 3, 5, 14, 26, 35, 40, 65, 72, 95, 99, 104, 124)
-            )),
+            #('kselect', feature_selection.SelectKBest(feature_selection.f_regression, k=115)),
+            ('drop', transformers.ColumnDropper(columns=(0, 3, 5, 14, 26, 35, 40, 65, 72, 95, 99, 104, 124))),
             ('scale', preprocessing.StandardScaler(
                 with_mean=True,
                 with_std=True
             )),
             ('select', feature_selection.SelectPercentile(
-                percentile=59,
+                percentile=85,#59,
                 score_func=feature_selection.mutual_info_classif
             )),
             ('estim', svm.NuSVC(
@@ -304,3 +321,117 @@ class NearestCentroidLearner(AbstractLearner):
 
         pipe.fit(x, y)
         self._model = pipe.predict
+
+
+
+class test(AbstractLearner):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        pipe = pipeline.Pipeline([
+            #('kselect', feature_selection.SelectKBest(feature_selection.f_regression, k=115)),
+            ('drop', transformers.ColumnDropper(columns=(0, 3, 5, 14, 26, 35, 40, 65, 72, 95, 99, 104, 124))),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True
+            )),
+            ('select', feature_selection.SelectPercentile(
+                percentile=59,#59,
+                score_func=feature_selection.mutual_info_classif
+            )),
+            #('estim', gaussian_process.GaussianProcessClassifier(max_iter_predict=5)),
+            #('estim', tree.DecisionTreeClassifier(max_depth=15)),
+            #('estim', ensemble.RandomForestClassifier(max_depth=15, n_estimators=100)),
+            #('estim', neural_network.MLPClassifier(hidden_layer_sizes=(2500,4), activation='relu', solver='adam', alpha=0.0001)),
+            #('estim', ensemble.AdaBoostClassifier()),
+            #('estim', naive_bayes.GaussianNB()),
+            #('estim', svm.SVC(C=1.1, kernel='rbf', gamma='auto', shrinking=True)),#degree, C, 'auto' 'sigmoid'
+            #('estim', svm.NuSVC(nu=0.0525, kernel='poly', coef0=0.1, degree=3, gamma='auto', shrinking=True)),
+        ])
+
+        pipe.fit(x, y)
+        self._model = pipe.predict
+
+
+
+
+
+
+class BaselineModel(AbstractNN):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        x, x_val, y, y_val = model_selection.train_test_split(
+            x, y,
+            train_size=0.90,
+            stratify=y,
+            random_state=2345
+        )
+
+        y = ku.to_categorical(y, num_classes=10)
+        y_val = ku.to_categorical(y_val, num_classes=10)
+
+        model = Sequential()
+        model.add(Dense(700, input_dim=128, init="he_uniform", activation="relu"))
+        #model.add(Dropout(0.2))
+        model.add(Dense(700, init="he_uniform", activation="relu")) #, activity_regularizer=regularizers.l1(0.1), kernel_regularizer=regularizers.l2(0.1)
+        model.add(Dense(10))
+        model.add(Activation("softmax"))
+
+        sgd = SGD(lr=0.1, momentum=0.9, decay=0.0, nesterov=False)
+        model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+        history = History()
+
+        # Batchsize is number of samples you use for gradient descent update
+        model.fit(x, y, epochs=30, batch_size=128, callbacks=[history], verbose=2, validation_data=(x_val, y_val), shuffle=2)
+
+        self._model = model.predict_classes
+
+
+class BaselineModel2(AbstractNN):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        x, x_val, y, y_val = model_selection.train_test_split(
+            x, y,
+            train_size=0.90,
+            stratify=y,
+            random_state=2345
+        )
+
+        y = ku.to_categorical(y, num_classes=10)
+        y_val = ku.to_categorical(y_val, num_classes=10)
+
+        model = Sequential()
+        model.add(Dense(700, input_dim=128, init="he_uniform", activation="relu"))
+        #model.add(Dropout(0.2))
+        model.add(Dense(350, init="he_uniform", activation="relu"))
+        model.add(Dense(10))
+        model.add(Activation("softmax"))
+
+        sgd = SGD(lr=0.1, momentum=0.9, decay=0.0, nesterov=False)
+        model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+        history = History()
+
+        pipe = pipeline.Pipeline([
+            #('kselect', feature_selection.SelectKBest(feature_selection.f_regression, k=115)),
+            ('drop', transformers.ColumnDropper(columns=(0, 3, 5, 14, 26, 35, 40, 65, 72, 95, 99, 104, 124))),
+            ('scale', preprocessing.StandardScaler(
+                with_mean=True,
+                with_std=True
+            )),
+            ('select', feature_selection.SelectPercentile(
+                percentile=59,#59,
+                score_func=feature_selection.mutual_info_classif
+            )),
+            ('estim', model),
+        ])
+
+        pipe.fit(x, y, epochs=50, batch_size=128, callbacks=[history], verbose=2, validation_data=(x_val, y_val), shuffle=2)
+        self._model = pipe.predict_classes

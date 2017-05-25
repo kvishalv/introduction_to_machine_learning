@@ -7,17 +7,20 @@ from sklearn import model_selection
 
 from modules.datasets import H5DataSet, CSVDataSet
 from modules.learners import *
+from random import randint
+
 
 warnings.simplefilter('ignore')
 
-VALIDATE      = True
-USE_UNLABELED = True
-USE_TRANSDUCE = True
-OUT_TRANSDUCE = True
+VALIDATE      = False
+USE_UNLABELED = False
+USE_TRANSDUCE = False
+OUT_TRANSDUCE = False
 OUTPUT        = True
 
-learner = QuadraticDiscriminantLearner()
+#learner = test()
 #learner = GridLearner()
+learner = BaselineModel()
 
 def main():
     labeled_set = H5DataSet.from_labeled_data('./data/train_labeled.h5')
@@ -26,10 +29,12 @@ def main():
     if VALIDATE:
         x_label, x_val, y_label, y_val = model_selection.train_test_split(
             x_label, y_label,
-            train_size=0.80,
+            train_size=0.90,
             stratify=y_label,
-            random_state=1742
+            random_state=randint(0,2000)
         )
+
+    print(x_label.shape)
 
     if USE_UNLABELED:
         unlabeled_set = H5DataSet.from_unlabeled_data('./data/train_unlabeled.h5')
