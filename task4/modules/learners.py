@@ -354,8 +354,6 @@ class ManifoldLLELearner(AbstractLearner):
         self._model = pipe.predict
 
 
-
-
 class BaselineModel3(AbstractNN):
 
     def _train(self):
@@ -387,9 +385,6 @@ class BaselineModel3(AbstractNN):
         model.fit(x, y, epochs=30, batch_size=128, callbacks=[history], verbose=2, validation_data=(x_val, y_val), shuffle=2)
 
         self._model = model.predict_classes
-
-
-
 
 class BaselineModel2(AbstractNN):
 
@@ -434,3 +429,37 @@ class BaselineModel2(AbstractNN):
 
         pipe.fit(x, y, epochs=50, batch_size=128, callbacks=[history], verbose=2, validation_data=(x_val, y_val), shuffle=2)
         self._model = pipe.predict_classes
+
+
+class BaselineModel_C(AbstractNN):
+
+    def _train(self):
+        x = self._train_features
+        y = self._train_outputs
+
+        x, x_val, y, y_val = model_selection.train_test_split(
+            x, y,
+            train_size=0.80,
+            stratify=y,
+            random_state=2345,
+        )
+
+        y = ku.to_categorical(y, num_classes=10)
+        y_val = ku.to_categorical(y_val, num_classes=10)
+
+        model = Sequential()
+        model.add(Dense(1024, input_dim=128, init="he_uniform", activation="relu"))
+        model.add(Dropout(0.2))
+        model.add(Dense(1024, init="he_uniform", activation="relu")) #, activity_regularizer=regularizers.l1(0.1), kernel_regularizer=regularizers.l2(0.1)
+        model.add(Dropout(0.1))
+        model.add(Dense(10))
+        model.add(Activation("softmax"))
+
+        sgd = SGD(lr=0.1, momentum=0.9, decay=0.0, nesterov=False)
+        model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+        history = History()
+
+        # Batchsize is number of samples you use for gradient descent update
+        model.fit(x, y, epochs=30, batch_size=128, callbacks=[history], verbose=2, validation_data=(x_val, y_val), shuffle=2)
+
+        self._model = model.predict_classes
