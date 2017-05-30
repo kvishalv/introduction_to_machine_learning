@@ -55,12 +55,14 @@ def main():
             model.fit(x_train, y_train)
             y_train = model.transduction_
 
+
+
     else:
         x_train = x_label
         y_train = y_label
 
-    learner.learn_from(x_train, y_train)
-    train_acc = learner.train_error
+    # learner.learn_from(x_train, y_train)
+    # train_acc = learner.train_error
 
     if USE_UNLABELED and OUT_TRANSDUCE:
         unlabeled_set.outputs = learner.get_transduction()[len(x_label):]
@@ -69,7 +71,7 @@ def main():
     print('Scoring:')
     print('=======')
     print("Classifier:", learner.__class__.__name__)
-    print('Training accuracy  :', train_acc)
+    #print('Training accuracy  :', train_acc)
 
     if VALIDATE:
         val_acc = learner.validate_against(x_val, y_val)
@@ -77,9 +79,10 @@ def main():
         print('Difference         :', train_acc - val_acc)
 
     if OUTPUT:
-        test_set = H5DataSet.from_test_data('./data/test.h5')
-        test_set.outputs = learner.predict_from(test_set.features)
-        test_set.write_labelled_output('test_result.csv')
+        test_set = H5DataSet.from_unlabeled_data('./data/train_unlabeled.h5')
+        test_set.outputs = model.get_transduction() #.predict_from(test_set.features)
+        #test_set.write_labelled_output('test_result.csv')
+        test_set.write_labelled_output('transduction2.csv')
 
 
 if __name__ == '__main__':
