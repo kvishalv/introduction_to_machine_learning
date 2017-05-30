@@ -132,11 +132,11 @@ class BaselineModel(AbstractNN):
         )
 
         model.fit(
-            x, to_categorical(y, num_classes=10),
-            #x_train, to_categorical(y_train, num_classes=10),
-            epochs=1000,
+            # x, to_categorical(y, num_classes=10),
+            x_train, to_categorical(y_train, num_classes=10),
+            epochs=200,
             batch_size=128,
-            #validation_data=(x_val, to_categorical(y_val, num_classes=10)),
+            validation_data=(x_val, to_categorical(y_val, num_classes=10)),
             shuffle=True,
             callbacks=[],
             #callbacks=[es],
