@@ -101,10 +101,12 @@ class BaselineModel(AbstractNN):
         y = self._train_outputs
 
         model = Sequential([
-            Dropout(0.15, input_shape=(128,)),
+            Dropout(0.1, input_shape=(128,)),
             Dense(1024, kernel_initializer='he_uniform'),
             Activation(PReLU(shared_axes=[1])),
-            Dropout(0.15),
+            Dropout(0.1),
+            Dense(1024, kernel_initializer='he_uniform'),
+            Dropout(0.1),
             Dense(10),
             Activation('softmax'),
         ])
@@ -118,7 +120,7 @@ class BaselineModel(AbstractNN):
 
         x_train, x_val, y_train, y_val = model_selection.train_test_split(
             x, y,
-            train_size=0.95,
+            train_size=0.90,
             stratify=y,
             random_state=1742
         )
@@ -134,7 +136,7 @@ class BaselineModel(AbstractNN):
         model.fit(
             # x, to_categorical(y, num_classes=10),
             x_train, to_categorical(y_train, num_classes=10),
-            epochs=200,
+            epochs=400,
             batch_size=128,
             validation_data=(x_val, to_categorical(y_val, num_classes=10)),
             shuffle=True,

@@ -13,15 +13,15 @@ from modules.NNModels import *
 warnings.simplefilter('ignore')
 
 VALIDATE      = False
-USE_UNLABELED = False
-USE_TRANSDUCE = False
+USE_UNLABELED = True
+USE_TRANSDUCE = True
 OUT_TRANSDUCE = False
 OUTPUT        = True
 
 
 #learner = test()
 #learner = GridLearner()
-learner = BaselineModel3()
+learner = BaselineModel()
 #learner = ManifoldLLELearner()
 
 def main():
@@ -43,8 +43,9 @@ def main():
         x_unlabel = unlabeled_set.features
 
         if USE_TRANSDUCE:
-            trsd_set = CSVDataSet.from_unlabeled_data('./data/transduced.csv')
+            trsd_set = CSVDataSet.from_unlabeled_data('./transduction2.csv')
             y_unlabel = trsd_set.features[:, 0]
+            print(x_unlabel.shape)
         else:
             y_unlabel = -np.ones(len(x_unlabel))
 

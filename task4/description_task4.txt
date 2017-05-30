@@ -1,0 +1,23 @@
+Description task 4
+
+Data processing:
+- Sparse data
+- dropping of columns (0, 3, 5, 14, 26, 35, 40, 65, 72, 95, 99, 104, 124),
+- Scale with mean and std
+- Select 59 percentile (determined by grid search cv)
+
+Supervised learning (labelled data only)
+- Neural networks
+-- Multi-layer perceptron, 1-3 layers (1 with high epoch performed the best)
+- NuSVC & SVC
+- KNN
+
+Semi-supervised learning:
+- Approach: learn labels with sklearn LabelSpreading, then perform supervised learning approach on top
+-- LabelSpreading: kernel ‘rbf’, gamma=2.0
+
+Results
+- Above hard base line with labelled data only (good public score)
+- Private score might be based on unlabelled data, thus added a pre-supervised learning step
+
+Validation by splitting data into train and validation set
