@@ -52,6 +52,8 @@ class H5DataSet(object):
         return mi, my, mx
 
     def write_labelled_output(self, filename):
+        print(self.ids)
+        print(self.ids.shape)
         np.savetxt(
             filename, np.column_stack((self.ids, self.outputs)),
             header="Id,y", comments="",

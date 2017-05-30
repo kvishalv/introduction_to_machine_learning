@@ -80,7 +80,10 @@ def main():
 
     if OUTPUT:
         test_set = H5DataSet.from_unlabeled_data('./data/train_unlabeled.h5')
-        test_set.outputs = model.transduction_ #.predict_from(test_set.features)
+        test_set.outputs = model.transduction_[len(y_label):] #.predict_from(test_set.features)
+        print(model.transduction_)
+        print(model.transduction_.shape)
+
         #test_set.write_labelled_output('test_result.csv')
         test_set.write_labelled_output('transduction2.csv')
 
